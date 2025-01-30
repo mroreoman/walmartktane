@@ -252,7 +252,7 @@ public class WiresModule extends ModuleBase {
   }
 
   private Image imageFromPosition(int position) {
-    return new Image("modules/wire_drawings/wire" + (position + 1) + ".png");
+    return new Image(WiresModule.class.getResourceAsStream("wire_drawings/wire" + (position + 1) + ".png"));
   }
 
   public void play() {}

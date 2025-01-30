@@ -18,12 +18,12 @@ import main.Bomb;
 import main.Util;
 
 public class KeypadsModule extends ModuleBase {
-  private static final String[] COLUMN1 = {"modules/keypad_symbols/28-balloon.png", "modules/keypad_symbols/13-at.png", "modules/keypad_symbols/30-upsidedowny.png", "modules/keypad_symbols/12-squigglyn.png", "modules/keypad_symbols/7-squidknife.png", "modules/keypad_symbols/9-hookn.png", "modules/keypad_symbols/23-leftc.png"};
-  private static final String[] COLUMN2 = {"modules/keypad_symbols/16-euro.png", "modules/keypad_symbols/28-balloon.png", "modules/keypad_symbols/23-leftc.png", "modules/keypad_symbols/26-cursive.png", "modules/keypad_symbols/3-hollowstar.png", "modules/keypad_symbols/9-hookn.png", "modules/keypad_symbols/20-questionmark.png"};
-  private static final String[] COLUMN3 = {"modules/keypad_symbols/1-copyright.png", "modules/keypad_symbols/8-pumpkin.png", "modules/keypad_symbols/26-cursive.png", "modules/keypad_symbols/5-doublek.png", "modules/keypad_symbols/15-meltedthree.png", "modules/keypad_symbols/30-upsidedowny.png", "modules/keypad_symbols/3-hollowstar.png"};
-  private static final String[] COLUMN4 = {"modules/keypad_symbols/11-six.png", "modules/keypad_symbols/21-paragraph.png", "modules/keypad_symbols/31-bt.png", "modules/keypad_symbols/7-squidknife.png", "modules/keypad_symbols/5-doublek.png", "modules/keypad_symbols/20-questionmark.png", "modules/keypad_symbols/4-smileyface.png"};
-  private static final String[] COLUMN5 = {"modules/keypad_symbols/24-pitchfork.png", "modules/keypad_symbols/4-smileyface.png", "modules/keypad_symbols/31-bt.png", "modules/keypad_symbols/22-rightc.png", "modules/keypad_symbols/21-paragraph.png", "modules/keypad_symbols/19-dragon.png", "modules/keypad_symbols/2-filledstar.png"};
-  private static final String[] COLUMN6 = {"modules/keypad_symbols/11-six.png", "modules/keypad_symbols/16-euro.png", "modules/keypad_symbols/27-tracks.png", "modules/keypad_symbols/14-ae.png", "modules/keypad_symbols/24-pitchfork.png", "modules/keypad_symbols/18-nwithhat.png", "modules/keypad_symbols/6-omega.png"};
+  private static final String[] COLUMN1 = {"keypad_symbols/28-balloon.png", "keypad_symbols/13-at.png", "keypad_symbols/30-upsidedowny.png", "keypad_symbols/12-squigglyn.png", "keypad_symbols/7-squidknife.png", "keypad_symbols/9-hookn.png", "keypad_symbols/23-leftc.png"};
+  private static final String[] COLUMN2 = {"keypad_symbols/16-euro.png", "keypad_symbols/28-balloon.png", "keypad_symbols/23-leftc.png", "keypad_symbols/26-cursive.png", "keypad_symbols/3-hollowstar.png", "keypad_symbols/9-hookn.png", "keypad_symbols/20-questionmark.png"};
+  private static final String[] COLUMN3 = {"keypad_symbols/1-copyright.png", "keypad_symbols/8-pumpkin.png", "keypad_symbols/26-cursive.png", "keypad_symbols/5-doublek.png", "keypad_symbols/15-meltedthree.png", "keypad_symbols/30-upsidedowny.png", "keypad_symbols/3-hollowstar.png"};
+  private static final String[] COLUMN4 = {"keypad_symbols/11-six.png", "keypad_symbols/21-paragraph.png", "keypad_symbols/31-bt.png", "keypad_symbols/7-squidknife.png", "keypad_symbols/5-doublek.png", "keypad_symbols/20-questionmark.png", "keypad_symbols/4-smileyface.png"};
+  private static final String[] COLUMN5 = {"keypad_symbols/24-pitchfork.png", "keypad_symbols/4-smileyface.png", "keypad_symbols/31-bt.png", "keypad_symbols/22-rightc.png", "keypad_symbols/21-paragraph.png", "keypad_symbols/19-dragon.png", "keypad_symbols/2-filledstar.png"};
+  private static final String[] COLUMN6 = {"keypad_symbols/11-six.png", "keypad_symbols/16-euro.png", "keypad_symbols/27-tracks.png", "keypad_symbols/14-ae.png", "keypad_symbols/24-pitchfork.png", "keypad_symbols/18-nwithhat.png", "keypad_symbols/6-omega.png"};
   private static final String[][] SYMBOLS = {COLUMN1, COLUMN2, COLUMN3, COLUMN4, COLUMN5, COLUMN6};
   
   private static final Random rand = new Random();
@@ -42,7 +42,7 @@ public class KeypadsModule extends ModuleBase {
 
     private Keypad(int column, int index) {
       path = SYMBOLS[column][index];
-      ImageView img = new ImageView(new Image(path));
+      ImageView img = new ImageView(new Image(KeypadsModule.class.getResourceAsStream(path)));
       img.setFitHeight(60);
       img.setFitWidth(60);
       light = new Rectangle(30, 5, Color.TRANSPARENT);

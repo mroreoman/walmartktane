@@ -328,7 +328,7 @@ public class WireSequencesModule extends ModuleBase {
   }
   
   private Image imageFromPosition(int position, String connection) {
-    return new Image("modules/wire_sequences_drawings/wireseq" + position + connection + ".png");
+    return new Image(WireSequencesModule.class.getResourceAsStream("wire_sequences_drawings/wireseq" + position + connection + ".png"));
   }
 
   private void placeWire(WireSequence wire) {

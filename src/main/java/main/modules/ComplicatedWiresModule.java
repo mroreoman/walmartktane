@@ -42,15 +42,15 @@ public class ComplicatedWiresModule extends ModuleBase {
       if (color.length == 1) {
         setEffect(new ColorInput(0, 0, image.getWidth(), image.getHeight(), color[0]));
       } else if (color[1] == COLORS[1]) {
-        ImageView stripe = new ImageView(new Image("modules/complicated_wire_drawings/stripe-red-white.png"));
+        ImageView stripe = new ImageView(new Image(ComplicatedWiresModule.class.getResourceAsStream("complicated_wire_drawings/stripe-red-white.png")));
         stripe.setViewport(new Rectangle2D(125.0, 125.0, 150.0, 150.0));
         setGraphic(stripe);
       } else if (color[0] == COLORS[1]) {
-        ImageView stripe = new ImageView(new Image("modules/complicated_wire_drawings/stripe-red-blue.png"));
+        ImageView stripe = new ImageView(new Image(ComplicatedWiresModule.class.getResourceAsStream("complicated_wire_drawings/stripe-red-blue.png")));
         stripe.setViewport(new Rectangle2D(125.0, 125.0, 150.0, 150.0));
         setGraphic(stripe);
       } else {
-        ImageView stripe = new ImageView(new Image("modules/complicated_wire_drawings/stripe-blue-white.png"));
+        ImageView stripe = new ImageView(new Image(ComplicatedWiresModule.class.getResourceAsStream("complicated_wire_drawings/stripe-blue-white.png")));
         stripe.setViewport(new Rectangle2D(125.0, 125.0, 150.0, 150.0));
         setGraphic(stripe);
       }
@@ -259,7 +259,7 @@ public class ComplicatedWiresModule extends ModuleBase {
       starBoxes[i] = new StackPane();
       starBoxes[i].getChildren().add(new Rectangle(25, 25, Color.BURLYWOOD));
       if (stars[i]) {
-        starBoxes[i].getChildren().add(new ImageView(new Image("modules/complicated_wire_drawings/compstar" + (i + 1) + ".png")));
+        starBoxes[i].getChildren().add(new ImageView(new Image(ComplicatedWiresModule.class.getResourceAsStream("complicated_wire_drawings/compstar" + (i + 1) + ".png"))));
       }
       starBoxes[i].setMinSize(25, 25);
       starBoxes[i].setMaxSize(25, 25);
@@ -305,7 +305,7 @@ public class ComplicatedWiresModule extends ModuleBase {
   }
 
   private Image imageFromPosition(int position) {
-    return new Image("modules/complicated_wire_drawings/compwire" + (position + 1) + ".png");
+    return new Image(ComplicatedWiresModule.class.getResourceAsStream("complicated_wire_drawings/compwire" + (position + 1) + ".png"));
   }
 
   public void play() {}
