@@ -123,16 +123,24 @@ public class KTANE extends Application {
 
     Button theFirstBomb = new Button("The First Bomb");
     theFirstBomb.setOnAction(event -> {
-      Class[] modules = {WiresModule.class, TheButtonModule.class, KeypadsModule.class};
-      int[] numModules = {3};
-      bombs.add(new Bomb(300, 3, numModules, modules));
+      Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class};
+      int[] numModules = {moduleTypes.length};
+      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
+      playBomb(bombs.size()-1);
+    });
+
+    Button theBigBomb = new Button("The Big Bomb");
+    theBigBomb.setOnAction(event -> {
+      Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
+      int[] numModules = {moduleTypes.length};
+      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
       playBomb(bombs.size()-1);
     });
     
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
     
-    VBox box = new VBox(25, title, theFirstBomb, back);
+    VBox box = new VBox(25, title, theFirstBomb, theBigBomb, back);
     box.setAlignment(Pos.CENTER);
     stage.setScene(new Scene(box));
   }
