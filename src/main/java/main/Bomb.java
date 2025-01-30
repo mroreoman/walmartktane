@@ -78,7 +78,7 @@ public class Bomb extends Scene {
   private void initModules(int numModules, Class<? extends ModuleBase>... moduleTypes) {
     modules = new ModuleBase[numModules];
 
-    if (moduleTypes.length < 1) { // TODO add back image modules once images are worky
+    if (moduleTypes.length < 1) {
       moduleTypes = new Class[] {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class}; // all modules
       // moduleTypes = new Class[] {PasswordsModule.class, MemoryModule.class, MazesModule.class}; // most recent modules
       // moduleTypes = new Class[] {WiresModule.class, KeypadsModule.class, ComplicatedWiresModule.class, WireSequencesModule.class}; // modules that use pictures
