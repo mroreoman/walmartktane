@@ -10,6 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -33,7 +34,7 @@ public class KTANE extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     stage.setTitle("Walmart KTANE");
-    // stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("ktane.png"))); // TODO images no worky
+    stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("ktane.png")));
     stage.setWidth(750);
     stage.setHeight(475);
     KTANE.stage = stage;
