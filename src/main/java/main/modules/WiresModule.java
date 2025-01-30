@@ -22,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import main.Bomb;
-import main.Util;
 
 public class WiresModule extends ModuleBase {
   private static final Color[] COLORS = {Color.RED, Color.WHITE, Color.BLUE, Color.YELLOW, Color.BLACK};

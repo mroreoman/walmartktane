@@ -36,7 +36,7 @@ public class KTANE extends Application {
     // stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("ktane.png"))); // TODO images no worky
     stage.setWidth(750);
     stage.setHeight(475);
-    this.stage = stage;
+    KTANE.stage = stage;
     
     Text welcome = new Text("Welcome to Walmart KTANE.");
     welcome.setFont(new Font("Roboto Slab", 50));

@@ -2,24 +2,21 @@ package main.modules;
 
 import java.util.Random;
 
-import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import main.Bomb;
-import main.Util;
 
 public class PasswordsModule extends ModuleBase {
-  private static Random rand = new Random();
-  private static String[] passwords = {"about", "after", "again", "below", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "plant", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "water", "where", "which", "world", "would", "write"};
-  private static String alphabet = "abcdefghijklmnopqrstuvwxyz";
+  private final static Random rand = new Random();
+  private final static String[] passwords = {"about", "after", "again", "below", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "plant", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "water", "where", "which", "world", "would", "write"};
+  private final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
   private Character[][] slots = {new Character[6], new Character[6], new Character[6], new Character[6], new Character[6]};
 
@@ -79,7 +76,7 @@ public class PasswordsModule extends ModuleBase {
   private void initPasswords() {
     String word = passwords[rand.nextInt(passwords.length)];
     for (int i = 0; i < slots.length; i++) {
-      String alphabet = this.alphabet;
+      String alphabet = PasswordsModule.alphabet;
       
       Character ans = word.toCharArray()[i];
       slots[i][rand.nextInt(6)] = ans;

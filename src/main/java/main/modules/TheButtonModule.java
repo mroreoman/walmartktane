@@ -41,7 +41,7 @@ public class TheButtonModule extends ModuleBase {
   }
 
   public void setSolution() {
-    if (color == color.BLUE && label == "Abort") {
+    if (color == Color.BLUE && label == "Abort") {
       tapSolve = false;
     } else if (getEdgework().numBatteries() > 1 && label == ("Detonate")) {
       tapSolve = true;
