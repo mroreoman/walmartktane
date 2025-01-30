@@ -34,7 +34,7 @@ public class KTANE extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     stage.setTitle("Walmart KTANE");
-    stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("ktane.png")));
+    stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("walmartktaneicon.png")));
     stage.setWidth(750);
     stage.setHeight(475);
     KTANE.stage = stage;
