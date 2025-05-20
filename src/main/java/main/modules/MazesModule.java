@@ -1,11 +1,12 @@
-package main.modules;
+package main.modules; // possibly deactivate buttons after module solved
 
 import java.util.Random;
 
 import javafx.animation.KeyFrame;
-// import javafx.animation.Animation;
-// import javafx.animation.RotateTransition;
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition; // trying to make this work with a RT
 import javafx.animation.Timeline;
+import javafx.geometry.Point3D;
 import javafx.util.Duration;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -15,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 import main.Bomb;
 
@@ -48,13 +50,13 @@ public class MazesModule extends ModuleBase {
   private Arrow down;
   private Arrow right;
   private Timeline spinner;
-  // private RotateTransition spinner;
+  private RotateTransition rotator;
   
   private class Cell extends StackPane {
 
     private String coordinate;
     private Rectangle rectangle;
-    private boolean isCursor;
+    private boolean isCursor; //are these not used
     private boolean isCircle = false;
     private boolean isFinish = false;
 
@@ -217,24 +219,37 @@ public class MazesModule extends ModuleBase {
   private void setFinish(String coordinate) {
     Cell cell = getCell(coordinate);
     cell.isFinish = true;
+    double pythagoras = Math.sqrt(Math.pow(15,2)-Math.pow(7.5,2));
+    // System.out.println(pythagoras);
     Polygon tringle = new Polygon(new double[] {
       0.0, 0.0,
-      -7.5, 12.5,
-      7.5, 12.5
+      // -7.5, 12.5,
+      // 7.5, 12.5
+      -7.5, pythagoras,
+      7.5, pythagoras
     });
     tringle.setFill(Color.RED);
+    Rotate center = new Rotate(0, 0, pythagoras*2/3);
+    // tringle.setTranslateY(10);
+    tringle.setTranslateX(1);
+    tringle.setTranslateY(-1*(pythagoras*2/3-6.5));
+    tringle.getTransforms().add(center);
+    // Point3D axis = tringle.getRotationAxis(); // default 0, 0, 1
+    // System.out.println("Point3D: " + axis.getX() + "  " + axis.getY() + " " + axis.getZ());
+    // tringle.setRotationAxis(new Point3D(0, 0, 100));
 
-    // spinner = new RotateTransition(Duration.millis(10000), tringle);
-    // spinner.setByAngle(360);
-    // spinner.setCycleCount(Animation.INDEFINITE);
-    // spinner.play();
+    // rotator = new RotateTransition(Duration.millis(10000), tringle);
+    // rotator.setByAngle(360);
+    // rotator.setCycleCount(Animation.INDEFINITE);
+    // rotator.play();
     spinner = new Timeline();
     for (int i = 0; i < 360; i++) {
       int temp = i;
-      spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * temp), event -> tringle.setRotate(temp)));
+      // spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * temp), event -> tringle.setRotate(temp)));
+      spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * temp), event -> center.setAngle(temp)));
     }
     // spinner = new Timeline(new KeyFrame(Duration.seconds(10.0/360), event -> {
-    //   tringle.setRotate(counter++);
+    // tringle.setRotate(counter++);
     //   counter %= 360;
     // }));
     spinner.setCycleCount(Timeline.INDEFINITE);
