@@ -224,7 +224,7 @@ public class WireSequencesModule extends ModuleBase {
     downangle.setFill(Color.SADDLEBROWN);
     downPane.getChildren().add(downangle);
     down.setGraphic(downPane);
-    down.setStyle("-fx-background-color: darkkhaki; border-color: darkgoldenrod");
+    down.setStyle("-fx-background-color: darkkhaki; -fx-border-color: darkgoldenrod");
     down.setOnAction(event -> {
       if (panels[panelNum].isSolved) {
         panelNum++;
