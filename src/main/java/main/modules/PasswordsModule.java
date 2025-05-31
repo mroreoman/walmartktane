@@ -2,10 +2,13 @@ package main.modules;
 
 import java.util.Random;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -25,7 +28,10 @@ public class PasswordsModule extends ModuleBase {
   private HBox letters;
   private HBox topArrows;
   private HBox bottomArrows;
+  private Pass[] upPasses;
+  private Pass[] downPasses;
   private Word[] words;
+  private String solution;
 
   private class Word extends StackPane {
     Character[] slot;
@@ -57,15 +63,19 @@ public class PasswordsModule extends ModuleBase {
     }
   }
 
-  // private class Pass extends Button {
-  //   private int index;
+  private class Pass extends Button {
 
-  //   private Pass(int index) {
-  //     super();
-  //     this.index = index;
-  //     setStyle("-fx-background-color: darkkhaki; -fx-background-radius: 7.5em; -fx-min-width: 15px; -fx-min-height: 15px; -fx-max-width: 15px; -fx-max-height: 15px;");
-  //   }
-  // }
+    private Pass() {
+      super();
+
+      setGraphic(new Polygon(new double[] {
+        0.0, 0.0,
+        -2.5, 5.0,
+        2.5, 5.0
+      }));
+      setStyle("-fx-background-color: darkkhaki; -fx-background-radius: 7.5em; -fx-min-width: 15px; -fx-min-height: 15px; -fx-max-width: 15px; -fx-max-height: 15px; -fx-border-radius:7.5em; -fx-border-color: darkgoldenrod");
+    }
+  }
 
   public PasswordsModule(Bomb bomb) {
     super("Passwords", bomb);
@@ -75,6 +85,7 @@ public class PasswordsModule extends ModuleBase {
   
   private void initPasswords() {
     String word = passwords[rand.nextInt(passwords.length)];
+
     for (int i = 0; i < slots.length; i++) {
       String alphabet = PasswordsModule.alphabet;
       
@@ -94,9 +105,11 @@ public class PasswordsModule extends ModuleBase {
     if (!checkSolvable()) {
       initPasswords();
     }
+
+
   }
 
-  private boolean checkSolvable() {
+  private boolean checkSolvable() { //FIXME unoptimal as hell
     String solution = "";
     for (String password: passwords) {
       int stage = 0;
@@ -119,7 +132,21 @@ public class PasswordsModule extends ModuleBase {
         continue;
       }
     }
+    this.solution = solution;
     return true;
+  }
+
+  private void checkSolved() {
+    String input = "";
+    for (int i = 0; i < 5; i++) {
+      input += words[i].slot[words[i].index];
+    }
+
+    if(isSolved()) {
+      submitSolved(input.equals(solution));
+    } else {
+      submit(input.equals(solution));
+    }
   }
 
   private void initGUI() {
@@ -137,18 +164,41 @@ public class PasswordsModule extends ModuleBase {
     letters.setMaxSize(170, 50);
     letters.setMinSize(170, 50);
 
-    // Button buton = new Button();
-    // buton.setOnAction(event -> passes[i])
-    
+    topArrows = new HBox(17.5);
+    bottomArrows = new HBox(17.5);
+    upPasses = new Pass[5];
+    downPasses = new Pass[5];
+
+    for (int i = 0; i < 5; i++) {
+      final int j = i;
+      upPasses[j] = new Pass();
+      upPasses[j].setOnAction(event -> words[j].up());
+
+      downPasses[j] = new Pass();
+      downPasses[j].setOnAction(event -> words[j].down());
+      downPasses[j].setRotate(180);
+    }
+    topArrows.getChildren().addAll(upPasses);
+    bottomArrows.getChildren().addAll(downPasses);
+
+    Button buton = new Button("SUBMIT");
+    buton.setPadding(Insets.EMPTY);
+    buton.setStyle("-fx-min-width: 65px; -fx-min-height: 20px; -fx-max-width: 65px; -fx-max-height: 20px; -fx-background-color: darkkhaki; -fx-font-family: 'Roboto Condensed'; -fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: black; -fx-border-color: darkgoldenrod;");
+    buton.setOnAction(event -> checkSolved());
+
     display.getChildren().addAll(new Rectangle(200, 100, Color.DARKSLATEGREY), new Rectangle(175, 75, Color.GREENYELLOW));
 
     Rectangle leftPlate = new Rectangle(5, 75, Color.DARKGOLDENROD);
     Rectangle rightPlate = new Rectangle(10, 75, Color.DARKGOLDENROD);
     Rectangle leftWire = new Rectangle(7, 50, Color.BLACK);
     Rectangle rightWire = new Rectangle(10, 50, Color.BLACK);
-
+  
     AnchorPane.setLeftAnchor(display, 12.0);
     AnchorPane.setTopAnchor(display, 75.0);
+    AnchorPane.setLeftAnchor(topArrows, 37.5);
+    AnchorPane.setTopAnchor(topArrows, 57.5);
+    AnchorPane.setLeftAnchor(bottomArrows, 37.5);
+    AnchorPane.setTopAnchor(bottomArrows, 177.5);
     AnchorPane.setLeftAnchor(letters, 30.0);
     AnchorPane.setTopAnchor(letters, 100.0);
     AnchorPane.setLeftAnchor(leftPlate, 7.5);
@@ -159,8 +209,10 @@ public class PasswordsModule extends ModuleBase {
     AnchorPane.setTopAnchor(leftWire, 100.0);
     AnchorPane.setRightAnchor(rightWire, 0.0);
     AnchorPane.setTopAnchor(rightWire, 100.0);
+    AnchorPane.setLeftAnchor(buton, 80.0);
+    AnchorPane.setTopAnchor(buton, 200.0);
     
-    box.getChildren().addAll(display, leftPlate, rightPlate, leftWire, rightWire, letters);
+    box.getChildren().addAll(display, topArrows, bottomArrows, leftPlate, rightPlate, leftWire, rightWire, letters, buton);
     this.getChildren().add(box);
   }
   

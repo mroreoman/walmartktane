@@ -66,7 +66,7 @@ public class Bomb extends Scene {
     initGUI();
   }
 
-  public Bomb(int startTimeSecs, int maxStrikes, int[] numModules, Class <? extends ModuleBase>[]... modules){
+  public Bomb(int startTimeSecs, int maxStrikes, int numModules, Class <? extends ModuleBase>[]... modules){
     super(new VBox(25));
     this.maxStrikes = maxStrikes;
     edgework = new Edgework();
@@ -79,8 +79,8 @@ public class Bomb extends Scene {
     modules = new ModuleBase[numModules];
 
     if (moduleTypes.length < 1) {
-      moduleTypes = new Class[] {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class}; // all modules
-      // moduleTypes = new Class[] {PasswordsModule.class, MemoryModule.class, MazesModule.class}; // most recent modules
+      // moduleTypes = new Class[] {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class}; // all modules
+      moduleTypes = new Class[] {PasswordsModule.class, MemoryModule.class, MazesModule.class}; // most recent modules
       // moduleTypes = new Class[] {WiresModule.class, KeypadsModule.class, ComplicatedWiresModule.class, WireSequencesModule.class}; // modules that use pictures
     }
     
@@ -94,28 +94,43 @@ public class Bomb extends Scene {
     }
   }
 
-  private void initModules(int[] numModules, Class<? extends ModuleBase>[]... modules) {
-    int sum = 0;
-    for (int num: numModules){
-      sum += num;
-    }
-    this.modules = new ModuleBase[sum];
+  private void initModules(int numModules, Class<? extends ModuleBase>[]... modules) {
 
-    for (int i = 0; i < modules.length; i++){
-      modules[i] = Util.randomUniqueIndexes(modules[i], numModules[i]);
-    }
+    this.modules = new ModuleBase[numModules];
 
-    for (Class<? extends ModuleBase>[] modulesArr: modules){
-      for (int i = 0; i < modulesArr.length; i++) {
-        Class<? extends ModuleBase> moduleType = modulesArr[i];
-        try {
-          this.modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
-        } catch (Exception e) {
-          throw new RuntimeException("Invalid Module Type " + moduleType, e);
-        }
+    for (int i = 0; i < modules.length; i++) {
+      Class<? extends ModuleBase>[] modulesArr = modules[i];
+      Class<? extends ModuleBase> moduleType = modulesArr[rand.nextInt(modulesArr.length)];
+      try {
+        this.modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
+      } catch (Exception e) {
+        throw new RuntimeException("Invalid Module Type " + moduleType, e);
       }
     }
   }
+
+  // private void initModules(int[] numModules, Class<? extends ModuleBase>[]... modules) {
+  //   int sum = 0;
+  //   for (int num: numModules){
+  //     sum += num;
+  //   }
+  //   this.modules = new ModuleBase[sum];
+
+  //   for (int i = 0; i < modules.length; i++){
+  //     modules[i] = Util.randomUniqueIndexes(modules[i], numModules[i]);
+  //   }
+
+  //   for (Class<? extends ModuleBase>[] modulesArr: modules){
+  //     for (int i = 0; i < modulesArr.length; i++) {
+  //       Class<? extends ModuleBase> moduleType = modulesArr[i];
+  //       try {
+  //         this.modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
+  //       } catch (Exception e) {
+  //         throw new RuntimeException("Invalid Module Type " + moduleType, e);
+  //       }
+  //     }
+  //   }
+  // }
 
   private void initTimer(int startTimeSecs) {
     this.startTimeSecs = startTimeSecs;
