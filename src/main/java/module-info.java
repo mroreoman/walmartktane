@@ -1,10 +1,10 @@
 module main {
     requires transitive javafx.controls;
-    requires javafx.fxml;
-    requires transitive javafx.graphics;
+//    requires javafx.fxml;
+//    requires transitive javafx.graphics;
 
-    opens main to javafx.fxml;
+//    opens main to javafx.fxml;
     exports main;
-    exports main.modules;
-    exports main.widgets;
+//    exports main.modules;
+//    exports main.widgets;
 }
