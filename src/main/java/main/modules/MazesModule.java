@@ -35,7 +35,6 @@ public class MazesModule extends ModuleBase {
   private final Cell[][] cells = new Cell[6][6];
   private final int mazeIndex;
   private final Cell finish;
-  private Timeline spinner;
 
   private Cell current;
   private int curCol;
@@ -101,12 +100,13 @@ public class MazesModule extends ModuleBase {
       tringle.setTranslateX(1);
       tringle.setTranslateY(-1*(height*2/3-6.5));
       tringle.getTransforms().add(center);
-      spinner = new Timeline();
+      Timeline spinner = new Timeline();
       for (int i = 0; i < 360; i++) {
         final int j = i;
         spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * j), event -> center.setAngle(j)));
       }
       spinner.setCycleCount(Timeline.INDEFINITE);
+      spinner.play();
       getChildren().add(tringle);
     }
 
@@ -257,12 +257,8 @@ public class MazesModule extends ModuleBase {
     }
   }
   
-  public void play() {
-    spinner.play();
-  }
+  public void play() {}
 
-  public void pause() {
-    spinner.pause();
-  }
+  public void pause() {}
 }
 
