@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,21 +21,19 @@ import javafx.scene.layout.HBox;
 import main.modules.*;
 
 public class KTANE extends Application {
-  private static ArrayList<Bomb> bombs = new ArrayList<Bomb>();
+  private static final ArrayList<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
   private static Stage stage;
   private static Scene menuScene;
-
-  private static TextField tf;
   
   public static void main(String[] args) {
     launch(args);
   }
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
     stage.setTitle("Walmart KTANE");
-    stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("walmartktaneicon.png")));
+    stage.getIcons().add(new Image(Objects.requireNonNull(KTANE.class.getResourceAsStream("walmartktaneicon.png"))));
     stage.setWidth(750);
     stage.setHeight(475);
     KTANE.stage = stage;
@@ -53,7 +52,7 @@ public class KTANE extends Application {
   }
 
   @Override
-  public void stop() throws Exception {
+  public void stop() {
     for (Bomb bomb: bombs) {
       bomb.stop();
     }
@@ -137,18 +136,18 @@ public class KTANE extends Application {
       playBomb(bombs.size()-1);
     });
 
-    // Button theBigBomb = new Button("The Big Bomb"); // this one does not work right now
-    // theBigBomb.setOnAction(event -> {
-    //   Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
-    //   int numModules = moduleTypes.length;
-    //   bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-    //   playBomb(bombs.size()-1);
-    // });
-    
+     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
+     theBigBomb.setOnAction(event -> {
+       Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
+       int numModules = moduleTypes.length;
+       bombs.add(new Bomb(300, 3, numModules, moduleTypes));
+       playBomb(bombs.size()-1);
+     });
+
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
-    
-    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, back);
+
+    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, theBigBomb, back);
     box.setAlignment(Pos.CENTER);
     stage.setScene(new Scene(box));
   }
