@@ -1,7 +1,9 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -21,6 +23,7 @@ import javafx.scene.layout.HBox;
 import main.modules.*;
 
 public class KTANE extends Application {
+  private static final Random rand = new Random();
   private static final ArrayList<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
   private static Stage stage;
@@ -86,7 +89,7 @@ public class KTANE extends Application {
     Button create = new Button("Create Bomb");
     create.setOnAction(event -> {
       try {
-        bombs.add(new Bomb(Integer.parseInt(amtField.getText()), Integer.parseInt(timeField.getText())));
+        bombs.add(new Bomb(Integer.parseInt(amtField.getText()), Integer.parseInt(timeField.getText()), 2));
         openMenu();
       } catch (NumberFormatException e) { System.out.println("Invalid input"); }
     });
@@ -112,7 +115,7 @@ public class KTANE extends Application {
   }
 
   private static void quickPlay() {
-    bombs.add(new Bomb());
+    bombs.add(new Bomb(5, 300, 2));
     playBomb(bombs.size() - 1);
   }
 
@@ -122,32 +125,31 @@ public class KTANE extends Application {
 
     Button theFirstBomb = new Button("The First Bomb");
     theFirstBomb.setOnAction(event -> {
-      Class[][] moduleTypes = {{WiresModule.class}, {TheButtonModule.class}, {KeypadsModule.class}};
-      int numModules = moduleTypes.length;
-      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
+      bombs.add(new Bomb(300, 3, List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class)));
       playBomb(bombs.size()-1);
     });
 
     Button somethingOldSomethingNew = new Button("Something Old, Something New");
     somethingOldSomethingNew.setOnAction(event -> {
-      Class[][] moduleTypes = {{WiresModule.class, TheButtonModule.class, KeypadsModule.class}, {WiresModule.class, TheButtonModule.class, KeypadsModule.class}, {SimonSaysModule.class, MemoryModule.class, MazesModule.class}};
-      int numModules = moduleTypes.length;
-      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
+      List<Class<? extends ModuleBase>> poolA = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class);
+      List<Class<? extends ModuleBase>> poolB = List.of(SimonSaysModule.class, MemoryModule.class, MazesModule.class);
+      List<Class<? extends ModuleBase>> moduleList = List.of(poolA.get(rand.nextInt(poolA.size())), poolA.get(rand.nextInt(poolA.size())), poolB.get(rand.nextInt(poolB.size())));
+      bombs.add(new Bomb(300, 3, moduleList));
       playBomb(bombs.size()-1);
     });
 
-     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
-     theBigBomb.setOnAction(event -> {
-       Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
-       int numModules = moduleTypes.length;
-       bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-       playBomb(bombs.size()-1);
-     });
+//     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
+//     theBigBomb.setOnAction(event -> {
+//       Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
+//       int numModules = moduleTypes.length;
+//       bombs.add(new Bomb(300, 3, numModules, moduleTypes));
+//       playBomb(bombs.size()-1);
+//     });
 
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
 
-    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, theBigBomb, back);
+    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, back);
     box.setAlignment(Pos.CENTER);
     stage.setScene(new Scene(box));
   }

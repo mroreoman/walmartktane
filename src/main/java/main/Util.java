@@ -8,7 +8,6 @@ import javafx.scene.text.Text;
 
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
-import main.modules.ModuleBase;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Background;
@@ -21,7 +20,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.geometry.Insets;
 
 public final class Util {
-  private static Random rand = new Random();
+  private final static Random rand = new Random();
   
   public static Background simpleBackground(Color color) {
     return new Background(new BackgroundFill(color, null, null));
@@ -29,19 +28,6 @@ public final class Util {
   
   public static int[] removeIndex(int[] oldArr, int index) {
     int[] newArr = new int[oldArr.length - 1];
-    int oldIt = 0;
-    int newIt = 0;
-    while (newIt < newArr.length) {
-      if (oldIt == index) {
-        oldIt++;
-      }
-      newArr[newIt++] = oldArr[oldIt++];
-    }
-    return newArr;
-  }
-
-  public static Class<? extends ModuleBase>[] removeIndex(Class<? extends ModuleBase>[] oldArr, int index) {
-    Class<? extends ModuleBase>[] newArr = new Class[oldArr.length - 1];
     int oldIt = 0;
     int newIt = 0;
     while (newIt < newArr.length) {
@@ -84,17 +70,6 @@ public final class Util {
       arr[i] = i;
     }
     return arr;
-  }
-
-  public static Class<? extends ModuleBase>[] randomUniqueIndexes(Class<? extends ModuleBase>[] oldArr, int num){
-    Class<? extends ModuleBase>[] newArr = new Class[num];
-    int i = 0;
-    while (i < num){
-      int index = rand.nextInt(oldArr.length);
-      newArr[i++] = oldArr[index];
-      oldArr = removeIndex(oldArr, index);
-    }
-    return newArr;
   }
 
   public static void setupText(Text text) {

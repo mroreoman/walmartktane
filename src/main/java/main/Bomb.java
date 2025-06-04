@@ -1,5 +1,8 @@
 package main;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.lang.RuntimeException;
 
@@ -25,6 +28,9 @@ import main.widgets.Edgework;
 public class Bomb extends Scene {
   private static final Random rand = new Random();
 
+  private static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
+  private static final List<Class<? extends ModuleBase>> testModules = List.of(PasswordsModule.class, MemoryModule.class, MazesModule.class);
+
   private Button buton;
   
   private Edgework edgework;
@@ -49,89 +55,51 @@ public class Bomb extends Scene {
   private ScrollPane moduleButtonsBox;
   private Pane currentModule;
   private AnchorPane moduleBox;
-  
-  public Bomb() {
-    this(5);
-  }
-  
-  public Bomb(int numModules) {
-    this(numModules, 300);
+
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
+    this(numModules, startTimeSecs, maxStrikes, allModules);
   }
 
-  public Bomb(int numModules, int startTimeSecs, Class<? extends ModuleBase>... moduleTypes) {
-    super(new VBox(25));
-    edgework = new Edgework();
-    initModules(numModules, moduleTypes);
-    initTimer(startTimeSecs);
-    initGUI();
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules) {
+    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules));
   }
 
-  public Bomb(int startTimeSecs, int maxStrikes, int numModules, Class <? extends ModuleBase>[]... modules){
+  /**
+   * Creates a bomb with the specified modules
+   * @param moduleList list of modules in the order that they should be added to the bomb
+   */
+  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList) {
     super(new VBox(25));
+    this.startTimeSecs = startTimeSecs;
     this.maxStrikes = maxStrikes;
     edgework = new Edgework();
-    initModules(numModules, modules);
+    initModules(moduleList);
     initTimer(startTimeSecs);
     initGUI();
   }
 
-  private void initModules(int numModules, Class<? extends ModuleBase>... moduleTypes) {
-    modules = new ModuleBase[numModules];
-
-    if (moduleTypes.length < 1) {
-      // moduleTypes = new Class[] {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class}; // all modules
-      // moduleTypes = new Class[] {PasswordsModule.class, MemoryModule.class, MazesModule.class}; // most recent modules
-      // moduleTypes = new Class[] {WiresModule.class, KeypadsModule.class, ComplicatedWiresModule.class, WireSequencesModule.class}; // modules that use pictures
-      moduleTypes = new Class[] {MazesModule.class};
+  private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
+    List<Class<? extends ModuleBase>> moduleList = new ArrayList<>();
+    for (int i = 0; i < numModules; i++) {
+      moduleList.add(availableModules.get(rand.nextInt(availableModules.size())));
     }
-    
+    return moduleList;
+  }
+
+  private void initModules(List<Class<? extends ModuleBase>> moduleTypes) {
+    if (moduleTypes == null || moduleTypes.isEmpty()) {
+      throw new IllegalArgumentException("Module types cannot be null or empty");
+    }
+
+    modules = new ModuleBase[moduleTypes.size()];
     for (int i = 0; i < modules.length; i++) {
-      Class<? extends ModuleBase> moduleType = moduleTypes[rand.nextInt(moduleTypes.length)];
       try {
-        modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
-      } catch (Exception e) {
-        throw new RuntimeException("Invalid Module Type " + moduleType, e);
+        modules[i] = moduleTypes.get(i).getConstructor(Bomb.class).newInstance(this);
+      } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        throw new RuntimeException("Bomb could not instantiate " + moduleTypes.get(i).getName(), e);
       }
     }
   }
-
-  private void initModules(int numModules, Class<? extends ModuleBase>[]... modules) {
-
-    this.modules = new ModuleBase[numModules];
-
-    for (int i = 0; i < modules.length; i++) {
-      Class<? extends ModuleBase>[] modulesArr = modules[i];
-      Class<? extends ModuleBase> moduleType = modulesArr[rand.nextInt(modulesArr.length)];
-      try {
-        this.modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
-      } catch (Exception e) {
-        throw new RuntimeException("Invalid Module Type " + moduleType, e);
-      }
-    }
-  }
-
-  // private void initModules(int[] numModules, Class<? extends ModuleBase>[]... modules) {
-  //   int sum = 0;
-  //   for (int num: numModules){
-  //     sum += num;
-  //   }
-  //   this.modules = new ModuleBase[sum];
-
-  //   for (int i = 0; i < modules.length; i++){
-  //     modules[i] = Util.randomUniqueIndexes(modules[i], numModules[i]);
-  //   }
-
-  //   for (Class<? extends ModuleBase>[] modulesArr: modules){
-  //     for (int i = 0; i < modulesArr.length; i++) {
-  //       Class<? extends ModuleBase> moduleType = modulesArr[i];
-  //       try {
-  //         this.modules[i] = moduleType.getConstructor(Bomb.class).newInstance(this);
-  //       } catch (Exception e) {
-  //         throw new RuntimeException("Invalid Module Type " + moduleType, e);
-  //       }
-  //     }
-  //   }
-  // }
 
   private void initTimer(int startTimeSecs) {
     this.startTimeSecs = startTimeSecs;
