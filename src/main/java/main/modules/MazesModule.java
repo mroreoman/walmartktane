@@ -133,15 +133,20 @@ public class MazesModule extends ModuleBase {
     }
 
     private void move() {
+      int targetCol = curCol;
+      int targetRow = curRow;
+      switch (direction) {
+        case "u" -> targetCol--;
+        case "l" -> targetRow--;
+        case "d" -> targetCol++;
+        case "r" -> targetRow++;
+      }
+
       if (current.canGo(direction)) {
-        switch (direction) {
-          case "u" -> up();
-          case "l" -> left();
-          case "d" -> down();
-          case "r" -> right();
-        }
+        current.deselect();
+        moveCursorTo(targetCol, targetRow);
         checkSolved();
-      } else {
+      } else if (targetCol >= 0 && targetCol < 6 && targetRow >= 0 && targetRow < 6) {
         submit(false);
       }
     }
@@ -158,7 +163,7 @@ public class MazesModule extends ModuleBase {
       }
     }
 
-    setCursor(rand.nextInt(6), rand.nextInt(6));
+    moveCursorTo(rand.nextInt(6), rand.nextInt(6));
 
     // pick random finCol, finRow that is not the same as curCol, curRow
     int finCol = rand.nextInt(6);
@@ -224,27 +229,7 @@ public class MazesModule extends ModuleBase {
     this.getChildren().add(box);
   }
 
-  private void up() {
-    current.deselect();
-    setCursor(curCol - 1, curRow);
-  }
-
-  private void left() {
-    current.deselect();
-    setCursor(curCol, curRow - 1);
-  }
-
-  private void down() {
-    current.deselect();
-    setCursor(curCol + 1, curRow);
-  }
-
-  private void right() {
-    current.deselect();
-    setCursor(curCol, curRow + 1);
-  }
-
-  private void setCursor(int col, int row) {
+  private void moveCursorTo(int col, int row) {
     curCol = col;
     curRow = row;
     current = cells[col][row];
