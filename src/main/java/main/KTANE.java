@@ -3,11 +3,11 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -20,11 +20,10 @@ import javafx.scene.text.Text;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 
-import main.modules.*;
+import main.StoryMode.StoryModeBomb;
 
 public class KTANE extends Application {
-  private static final Random rand = new Random();
-  private static final ArrayList<Bomb> bombs = new ArrayList<>();
+  private static final List<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
   private static Stage stage;
   private static Scene mainMenuScene;
@@ -150,33 +149,35 @@ public class KTANE extends Application {
     Text title = new Text("STORY MODE");
     title.setFont(new Font("Roboto Slab", 50));
 
-    Button theFirstBomb = new Button("The First Bomb");
-    theFirstBomb.setOnAction(event -> {
-      bombs.add(new Bomb(300, 3, List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class)));
-      bombs.getLast().play(stage);
-    });
-
-    Button somethingOldSomethingNew = new Button("Something Old, Something New");
-    somethingOldSomethingNew.setOnAction(event -> {
-      List<Class<? extends ModuleBase>> poolA = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class);
-      List<Class<? extends ModuleBase>> poolB = List.of(SimonSaysModule.class, MemoryModule.class, MazesModule.class);
-      List<Class<? extends ModuleBase>> moduleList = List.of(poolA.get(rand.nextInt(poolA.size())), poolA.get(rand.nextInt(poolA.size())), poolB.get(rand.nextInt(poolB.size())));
-      bombs.add(new Bomb(300, 3, moduleList));
-      bombs.getLast().play(stage);
-    });
-
-    Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
-    theBigBomb.setOnAction(event -> {
-      bombs.add(new Bomb(600, 3, Bomb.allModules));
-      bombs.getLast().play(stage);
-    });
+    VBox buttonBox = new VBox(10);
+    buttonBox.setAlignment(Pos.TOP_LEFT);
+    for (List<StoryModeBomb> chapter : StoryMode.ALL_CHAPTERS) {
+      HBox chapterBox = new HBox(10);
+      chapterBox.setAlignment(Pos.TOP_LEFT);
+      for (StoryModeBomb storyModeBomb : chapter) {
+        chapterBox.getChildren().add(createStoryModeButton(storyModeBomb));
+      }
+      buttonBox.getChildren().add(chapterBox);
+    }
+    ScrollPane buttonScroll = new ScrollPane(buttonBox);
+    buttonScroll.setMaxWidth(300);
 
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
 
-    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, theBigBomb, back);
+    VBox box = new VBox(25, title, buttonScroll, back);
     box.setAlignment(Pos.CENTER);
+    VBox.setVgrow(buttonScroll, Priority.ALWAYS);
     storyModeScene = new Scene(box);
+  }
+
+  private static Button createStoryModeButton(StoryMode.StoryModeBomb storyModeBomb) {
+    Button button = new Button(storyModeBomb.name());
+    button.setOnAction(event -> {
+      bombs.add(storyModeBomb.initialize());
+      bombs.getLast().play(stage);
+    });
+    return button;
   }
   
 }
