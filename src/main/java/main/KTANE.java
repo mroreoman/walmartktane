@@ -138,18 +138,16 @@ public class KTANE extends Application {
       playBomb(bombs.size()-1);
     });
 
-//     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
-//     theBigBomb.setOnAction(event -> {
-//       Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
-//       int numModules = moduleTypes.length;
-//       bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-//       playBomb(bombs.size()-1);
-//     });
+     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
+     theBigBomb.setOnAction(event -> {
+       bombs.add(new Bomb(600, 3, Bomb.allModules));
+       playBomb(bombs.size()-1);
+     });
 
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
 
-    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, back);
+    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, theBigBomb, back);
     box.setAlignment(Pos.CENTER);
     stage.setScene(new Scene(box));
   }

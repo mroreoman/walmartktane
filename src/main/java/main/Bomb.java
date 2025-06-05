@@ -26,10 +26,9 @@ import main.modules.*;
 import main.widgets.Edgework;
 
 public class Bomb extends Scene {
-  private static final Random rand = new Random();
+  public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
-  private static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
-  private static final List<Class<? extends ModuleBase>> testModules = List.of(PasswordsModule.class, MemoryModule.class, MazesModule.class);
+  private static final Random rand = new Random();
 
   private Button buton;
   
