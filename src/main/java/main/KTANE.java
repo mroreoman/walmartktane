@@ -27,7 +27,9 @@ public class KTANE extends Application {
   private static final ArrayList<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
   private static Stage stage;
-  private static Scene menuScene;
+  private static Scene mainMenuScene;
+  private static Scene bombCreationScene;
+  private static Scene storyModeScene;
   
   public static void main(String[] args) {
     launch(args);
@@ -35,22 +37,16 @@ public class KTANE extends Application {
 
   @Override
   public void start(Stage stage) {
+    KTANE.stage = stage;
+    initMainMenu();
+    initBombCreation();
+    initStoryMode();
+
     stage.setTitle("Walmart KTANE");
     stage.getIcons().add(new Image(Objects.requireNonNull(KTANE.class.getResourceAsStream("walmartktaneicon.png"))));
     stage.setWidth(750);
     stage.setHeight(475);
-    KTANE.stage = stage;
-    
-    Text welcome = new Text("Welcome to Walmart KTANE.");
-    welcome.setFont(new Font("Roboto Slab", 50));
-    Button buton = new Button("Start");
-    buton.setScaleX(5);
-    buton.setScaleY(5);
-    buton.setOnAction(event -> openMenu());
-    VBox root = new VBox(100, welcome, buton, new Text());
-    root.setAlignment(Pos.CENTER);
-    
-    stage.setScene(new Scene(root));
+    stage.setScene(mainMenuScene);
     stage.show();
   }
 
@@ -62,17 +58,62 @@ public class KTANE extends Application {
   }
   
   public static void openMenu() {
-    if (menuScene == null) {
-      initMenu();
-    }
     bombButtons.getChildren().clear();
     for (Bomb bomb: bombs) {
-      bombButtons.getChildren().add(bomb.getButton());
+      bombButtons.getChildren().add(bomb.getButton(stage));
     }
-    stage.setScene(menuScene);
+    stage.setScene(mainMenuScene);
   }
 
-  private static void createBomb() {
+  private static void quickPlay() {
+    bombs.add(new Bomb(5, 300, 3));
+    bombs.getLast().play(stage);
+  }
+
+  private static void initMainMenu() {
+    Text title = new Text("WALMART KTANE MENU");
+    title.setFont(new Font("Roboto Slab", 30));
+    title.setX(200);
+    title.setY(100);
+
+    Button story = new Button("Story mode");
+    story.setScaleX(1.75);
+    story.setScaleY(1.75);
+    story.setOnAction(event -> stage.setScene(storyModeScene));
+    
+    Button create = new Button("Create bomb");
+    create.setScaleX(1.75);
+    create.setScaleY(1.75);
+    create.setOnAction(event -> stage.setScene(bombCreationScene));
+    
+    Button quickPlay = new Button ("Quick play");
+    quickPlay.setScaleX(1.75);
+    quickPlay.setScaleY(1.75);
+    quickPlay.setOnAction(event -> quickPlay());
+    
+    Button exit = new Button ("Exit");
+    exit.setScaleX(1.75);
+    exit.setScaleY(1.75) ;
+    exit.setOnAction(event -> Platform.exit());
+    
+    VBox menuButtons = new VBox(25, story, create, quickPlay, exit);
+    menuButtons.setAlignment(Pos.CENTER_LEFT);
+    menuButtons.setLayoutX(100);
+    menuButtons.setLayoutY(150);
+
+    bombButtons = new VBox(10);
+    bombButtons.setAlignment(Pos.CENTER_LEFT);
+    
+    ScrollPane bombButtonsBox = new ScrollPane(bombButtons);
+    bombButtonsBox.setMinViewportWidth(150);
+    bombButtonsBox.setLayoutX(400);
+    bombButtonsBox.setLayoutY(150);
+    
+    Group root = new Group(title, menuButtons, bombButtonsBox);
+    mainMenuScene = new Scene(root);
+  }
+
+  private static void initBombCreation() {
     Text title = new Text("BOMB CREATION");
     title.setFont(new Font("Roboto Slab", 50));
     Text amtText = new Text("How many modules?");
@@ -102,30 +143,17 @@ public class KTANE extends Application {
     buttons.setAlignment(Pos.CENTER);
     VBox box = new VBox(25, title, amount, time, buttons);
     box.setAlignment(Pos.CENTER);
-    stage.setScene(new Scene(box));
+    bombCreationScene = new Scene(box);
   }
 
-  private static void playBomb(int bombIndex) {
-    try {
-      bombs.get(bombIndex).play();
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println("Invalid bomb number");
-    }
-  }
-
-  private static void quickPlay() {
-    bombs.add(new Bomb(5, 300, 2));
-    playBomb(bombs.size() - 1);
-  }
-
-  private static void storyMode() {
+  private static void initStoryMode() {
     Text title = new Text("STORY MODE");
     title.setFont(new Font("Roboto Slab", 50));
 
     Button theFirstBomb = new Button("The First Bomb");
     theFirstBomb.setOnAction(event -> {
       bombs.add(new Bomb(300, 3, List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class)));
-      playBomb(bombs.size()-1);
+      bombs.getLast().play(stage);
     });
 
     Button somethingOldSomethingNew = new Button("Something Old, Something New");
@@ -134,68 +162,21 @@ public class KTANE extends Application {
       List<Class<? extends ModuleBase>> poolB = List.of(SimonSaysModule.class, MemoryModule.class, MazesModule.class);
       List<Class<? extends ModuleBase>> moduleList = List.of(poolA.get(rand.nextInt(poolA.size())), poolA.get(rand.nextInt(poolA.size())), poolB.get(rand.nextInt(poolB.size())));
       bombs.add(new Bomb(300, 3, moduleList));
-      playBomb(bombs.size()-1);
+      bombs.getLast().play(stage);
     });
 
-     Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
-     theBigBomb.setOnAction(event -> {
-       bombs.add(new Bomb(600, 3, Bomb.allModules));
-       playBomb(bombs.size()-1);
-     });
+    Button theBigBomb = new Button("The Big Bomb"); //TODO: this one does not work right now
+    theBigBomb.setOnAction(event -> {
+      bombs.add(new Bomb(600, 3, Bomb.allModules));
+      bombs.getLast().play(stage);
+    });
 
     Button back = new Button("Back");
     back.setOnAction(event -> openMenu());
 
     VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, theBigBomb, back);
     box.setAlignment(Pos.CENTER);
-    stage.setScene(new Scene(box));
-  }
-
-  private static void initMenu() {
-    Text title = new Text("WALMART KTANE MENU");
-    title.setFont(new Font("Roboto Slab", 30));
-    title.setX(200);
-    title.setY(100);
-
-    Button story = new Button("Story mode");
-    story.setScaleX(1.75);
-    story.setScaleY(1.75);
-    story.setOnAction(event -> storyMode());
-    
-    Button create = new Button("Create bomb");
-    create.setScaleX(1.75);
-    create.setScaleY(1.75);
-    create.setOnAction(event -> createBomb());
-    
-    Button quickPlay = new Button ("Quick play");
-    quickPlay.setScaleX(1.75);
-    quickPlay.setScaleY(1.75);
-    quickPlay.setOnAction(event -> quickPlay());
-    
-    Button exit = new Button ("Exit");
-    exit.setScaleX(1.75);
-    exit.setScaleY(1.75) ;
-    exit.setOnAction(event -> Platform.exit());
-    
-    VBox menuButtons = new VBox(25, story, create, quickPlay, exit);
-    menuButtons.setAlignment(Pos.CENTER_LEFT);
-    menuButtons.setLayoutX(100);
-    menuButtons.setLayoutY(150);
-
-    bombButtons = new VBox(10);
-    bombButtons.setAlignment(Pos.CENTER_LEFT);
-    
-    ScrollPane bombButtonsBox = new ScrollPane(bombButtons);
-    bombButtonsBox.setMinViewportWidth(150);
-    bombButtonsBox.setLayoutX(400);
-    bombButtonsBox.setLayoutY(150);
-    
-    Group root = new Group(title, menuButtons, bombButtonsBox);
-    menuScene = new Scene(root);
-  }
-
-  public static Stage getStage() {
-    return stage;
+    storyModeScene = new Scene(box);
   }
   
 }

@@ -8,6 +8,7 @@ import java.lang.RuntimeException;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
@@ -153,8 +154,8 @@ public class Bomb extends Scene {
     ((VBox)getRoot()).getChildren().addAll(infoBox, moduleBox);
   }
 
-  public void play() {
-    KTANE.getStage().setScene(this);
+  public void play(Stage stage) {
+    stage.setScene(this);
     if (!exploded && !defused) {
       running = true;
       for (ModuleBase module: modules) {
@@ -230,10 +231,10 @@ public class Bomb extends Scene {
     }
   }
 
-  public final Button getButton() {
+  public final Button getButton(Stage stage) {
     if (buton == null) {
       buton = new Button(toString());
-      buton.setOnAction(event -> play());
+      buton.setOnAction(event -> play(stage));
       buton.setFont(new Font("Roboto Condensed", 15));
     }
     buton.setText(toString());
@@ -254,10 +255,6 @@ public class Bomb extends Scene {
 
   public int getStrikes() {
     return strikes;
-  }
-
-  public boolean isRunning() {
-    return running;
   }
 
   public String toString() {
