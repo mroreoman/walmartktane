@@ -32,18 +32,17 @@ public class Bomb extends Scene {
 
   private Button buton;
   
-  private Edgework edgework;
-  private ModuleBase[] modules;
+  private final Edgework edgework;
+  private final List<ModuleBase> modules;
   private int strikes = 0;
-  private int maxStrikes = 3;
-  private boolean running = false;
-  private boolean exploded = false;
-  private boolean defused = false;
-  
+  private int maxStrikes;
   private int timeSecs;
   private int startTimeSecs;
   private Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> tick()));
   private int tick = 0;
+  private boolean running = false;
+  private boolean exploded = false;
+  private boolean defused = false;
 
   private Text[] strikeTexts = new Text[maxStrikes - 1];
   private Text timerText;
@@ -72,6 +71,7 @@ public class Bomb extends Scene {
     this.startTimeSecs = startTimeSecs;
     this.maxStrikes = maxStrikes;
     edgework = new Edgework();
+    modules = new ArrayList<>();
     initModules(moduleList);
     initTimer(startTimeSecs);
     initGUI();
@@ -85,17 +85,16 @@ public class Bomb extends Scene {
     return moduleList;
   }
 
-  private void initModules(List<Class<? extends ModuleBase>> moduleTypes) {
-    if (moduleTypes == null || moduleTypes.isEmpty()) {
-      throw new IllegalArgumentException("Module types cannot be null or empty");
+  private void initModules(List<Class<? extends ModuleBase>> moduleList) {
+    if (moduleList == null || moduleList.isEmpty()) {
+      throw new IllegalArgumentException("Module types cannot be null or empty"); //TODO cancel bomb creation
     }
 
-    modules = new ModuleBase[moduleTypes.size()];
-    for (int i = 0; i < modules.length; i++) {
+    for (Class<? extends ModuleBase> moduleType : moduleList) {
       try {
-        modules[i] = moduleTypes.get(i).getConstructor(Bomb.class).newInstance(this);
+        modules.add(moduleType.getConstructor(Bomb.class).newInstance(this));
       } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-        throw new RuntimeException("Bomb could not instantiate " + moduleTypes.get(i).getName(), e);
+        throw new RuntimeException("Bomb could not instantiate " + moduleType.getName(), e);
       }
     }
   }
@@ -285,7 +284,7 @@ public class Bomb extends Scene {
   public String toString() {
     return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " ")) +
         "(" +
-        modules.length + (modules.length == 1 ? " module, " : " modules, ") +
+        modules.size() + (modules.size() == 1 ? " module, " : " modules, ") +
         strikes + (strikes == 1 ? " strike, " : " strikes, ") +
         getTime() +
         ")";
