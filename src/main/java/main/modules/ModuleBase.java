@@ -3,6 +3,8 @@ package main.modules;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.text.Font;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
@@ -36,6 +38,7 @@ public abstract class ModuleBase extends Pane {
     this.bomb = bomb;
     setMinSize(233, 233);
     setMaxSize(233, 233);
+    setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
     light = new Circle(getMaxWidth() - (MARGIN + 10), MARGIN + 10, 10, Color.TRANSPARENT);
     light.setStroke(Color.BLACK);
     getChildren().add(light);

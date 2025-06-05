@@ -8,6 +8,7 @@ import java.lang.RuntimeException;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.Scene;
@@ -16,12 +17,6 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.paint.Color;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 
 import main.modules.*;
 import main.widgets.Edgework;
@@ -48,6 +43,7 @@ public class Bomb extends Scene {
   private Text[] strikeTexts;
   private Text timerText;
   private Pane currentModule;
+  private final BorderPane root;
 
   public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
     this(numModules, startTimeSecs, maxStrikes, allModules);
@@ -62,15 +58,19 @@ public class Bomb extends Scene {
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
   public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList) {
-    super(new VBox(25));
+    super(new BorderPane());
+    root = (BorderPane)getRoot();
     this.startTimeSecs = startTimeSecs;
     this.maxStrikes = maxStrikes;
     edgework = new Edgework();
     modules = new ArrayList<>();
     timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> tick()));
+    timeline.setCycleCount(Timeline.INDEFINITE);
     strikeTexts = new Text[maxStrikes - 1];
     initModules(moduleList);
     initGUI();
+
+    timeline.play();
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -112,46 +112,33 @@ public class Bomb extends Scene {
   }
 
   private void initGUI() {
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    timeline.play();
-
-    //make info gui
     for (int i = 0; i < strikeTexts.length; i++) {
       strikeTexts[i] = new Text("X");
       Util.setupText(strikeTexts[i]);
     }
-    
     timerText = new Text(getTime());
     Util.setupText(timerText);
-    
     Button exitButton = new Button("exit");
     exitButton.setOnAction(event -> exit());
-    
     HBox timerBox = new HBox(25, new HBox(10, strikeTexts), timerText, exitButton);
-    AnchorPane.setRightAnchor(timerBox, 0.0);
-    AnchorPane.setTopAnchor(timerBox, 0.0);
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+    HBox infoBox = new HBox(edgework, spacer, timerBox);
 
-    AnchorPane infoBox = new AnchorPane(edgework, timerBox);
-
-    //make modules gui
     currentModule = new Pane();
-    currentModule.setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
     currentModule.setMinSize(233, 233);
     currentModule.setMaxSize(233, 233);
-    AnchorPane.setRightAnchor(currentModule, 10.0);
 
-    VBox moduleButtons = new VBox(10);
+    HBox moduleButtons = new HBox(10);
     for (ModuleBase module: modules) {
       moduleButtons.getChildren().add(module.getButton());
     }
-    ScrollPane moduleButtonsBox = new ScrollPane(moduleButtons);
-    moduleButtonsBox.setMinViewportWidth(50);
-    moduleButtonsBox.setPrefViewportHeight(250);
-    
-    AnchorPane moduleBox = new AnchorPane(moduleButtonsBox, currentModule);
+    ScrollPane moduleButtonsScroll = new ScrollPane(moduleButtons);
+    moduleButtonsScroll.setPrefHeight(50);
 
-    //add all to bomb scene
-    ((VBox)getRoot()).getChildren().addAll(infoBox, moduleBox);
+    root.setTop(infoBox);
+    root.setCenter(currentModule);
+    root.setBottom(moduleButtonsScroll);
   }
 
   public void play(Stage stage) {
