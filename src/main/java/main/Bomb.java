@@ -30,29 +30,23 @@ public class Bomb extends Scene {
 
   private static final Random rand = new Random();
 
+  private final int maxStrikes;
+  private final int startTimeSecs;
+
   private Button buton;
-  
   private final Edgework edgework;
   private final List<ModuleBase> modules;
   private int strikes = 0;
-  private int maxStrikes;
   private int timeSecs;
-  private int startTimeSecs;
-  private Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> tick()));
   private int tick = 0;
   private boolean running = false;
   private boolean exploded = false;
   private boolean defused = false;
 
-  private Text[] strikeTexts = new Text[maxStrikes - 1];
+  private Timeline timeline;
+  private Text[] strikeTexts;
   private Text timerText;
-  private HBox timerBox;
-  private Button exitButton;
-  private AnchorPane infoBox;
-  private VBox moduleButtons;
-  private ScrollPane moduleButtonsBox;
   private Pane currentModule;
-  private AnchorPane moduleBox;
 
   public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
     this(numModules, startTimeSecs, maxStrikes, allModules);
@@ -72,8 +66,9 @@ public class Bomb extends Scene {
     this.maxStrikes = maxStrikes;
     edgework = new Edgework();
     modules = new ArrayList<>();
+    timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> tick()));
+    strikeTexts = new Text[maxStrikes - 1];
     initModules(moduleList);
-    initTimer(startTimeSecs);
     initGUI();
   }
 
@@ -99,13 +94,7 @@ public class Bomb extends Scene {
     }
   }
 
-  private void initTimer(int startTimeSecs) {
-    this.startTimeSecs = startTimeSecs;
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    timeline.play();
-  }
-
-  private void tick(){
+  private void tick() {
     if (running) {
       tick++;
       if (tick >= maxStrikes + 1 - strikes) {
@@ -120,9 +109,11 @@ public class Bomb extends Scene {
       finish();
     }
   }
-  
 
   private void initGUI() {
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    timeline.play();
+
     //make info gui
     for (int i = 0; i < strikeTexts.length; i++) {
       strikeTexts[i] = new Text("X");
@@ -132,14 +123,14 @@ public class Bomb extends Scene {
     timerText = new Text(getTime());
     Util.setupText(timerText);
     
-    exitButton = new Button("exit");
+    Button exitButton = new Button("exit");
     exitButton.setOnAction(event -> exit());
     
-    timerBox = new HBox(25, new HBox(10, strikeTexts), timerText, exitButton);
+    HBox timerBox = new HBox(25, new HBox(10, strikeTexts), timerText, exitButton);
     AnchorPane.setRightAnchor(timerBox, 0.0);
     AnchorPane.setTopAnchor(timerBox, 0.0);
-    
-    infoBox = new AnchorPane(edgework, timerBox);
+
+    AnchorPane infoBox = new AnchorPane(edgework, timerBox);
 
     //make modules gui
     currentModule = new Pane();
@@ -148,15 +139,15 @@ public class Bomb extends Scene {
     currentModule.setMaxSize(233, 233);
     AnchorPane.setRightAnchor(currentModule, 10.0);
 
-    moduleButtons = new VBox(10);
+    VBox moduleButtons = new VBox(10);
     for (ModuleBase module: modules) {
       moduleButtons.getChildren().add(module.getButton());
     }
-    moduleButtonsBox = new ScrollPane(moduleButtons);
+    ScrollPane moduleButtonsBox = new ScrollPane(moduleButtons);
     moduleButtonsBox.setMinViewportWidth(50);
     moduleButtonsBox.setPrefViewportHeight(250);
     
-    moduleBox = new AnchorPane(moduleButtonsBox, currentModule);
+    AnchorPane moduleBox = new AnchorPane(moduleButtonsBox, currentModule);
 
     //add all to bomb scene
     ((VBox)getRoot()).getChildren().addAll(infoBox, moduleBox);
@@ -230,16 +221,12 @@ public class Bomb extends Scene {
   }
 
   private void updateBombText() {
-    if (running) {
-      timerText.setText(getTime());
+    if (exploded) {
+      timerText.setText(("Exploded at " + getTime()));
+    } else if (defused) {
+      timerText.setText(("Defused at " + getTime()));
     } else {
-      timerText.setText((exploded ? "Exploded at " : "Defused at ") + getTime());
-    }
-  }
-  
-  private void updateModuleButtons() {
-    for (ModuleBase module: modules) {
-      module.updateButton();
+      timerText.setText(getTime());
     }
   }
 
@@ -249,20 +236,12 @@ public class Bomb extends Scene {
       buton.setOnAction(event -> play());
       buton.setFont(new Font("Roboto Condensed", 15));
     }
+    buton.setText(toString());
     return buton;
   }
 
-  public final boolean updateButton() {
-    if (buton.getText().equals(toString())) {
-      return false;
-    } else {
-      buton.setText(toString());
-      return true;
-    }
-  }
-
   public boolean timerContains(int i) {
-    return getTime().indexOf(""+i) != -1;
+    return getTime().contains(Integer.toString(i));
   }
 
   public String getTime() {

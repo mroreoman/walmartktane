@@ -51,16 +51,12 @@ public abstract class ModuleBase extends Pane {
       buton.setOnAction(event -> bomb.setCurrentModule(this));
       buton.setFont(new Font("Roboto Condensed", 15));
     }
+    buton.setText(toString());
     return buton;
   }
 
-  public final boolean updateButton() {
-    if (buton.getText().equals(toString())) {
-      return false;
-    } else {
-      buton.setText(toString());
-      return true;
-    }
+  public final void updateButton() {
+    buton.setText(toString());
   }
 
   protected final void submit(boolean correct) {

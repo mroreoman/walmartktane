@@ -68,7 +68,6 @@ public class KTANE extends Application {
     bombButtons.getChildren().clear();
     for (Bomb bomb: bombs) {
       bombButtons.getChildren().add(bomb.getButton());
-      bomb.updateButton();
     }
     stage.setScene(menuScene);
   }
