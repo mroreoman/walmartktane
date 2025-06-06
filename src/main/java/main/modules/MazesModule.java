@@ -1,24 +1,28 @@
-package main.modules; // possibly deactivate buttons after module solved
+package main.modules; //TODO possibly deactivate buttons after module solved
 
 import java.util.Random;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
 
 import main.Bomb;
 
 public class MazesModule extends ModuleBase {
   private static final Random rand = new Random();
+  private static final double CELL_SIZE = 22.5;
+  private static final double SQUARE_SIZE = 7;
+  private static final double TRIANGLE_HEIGHT = Math.sqrt(Math.pow(15,2)-Math.pow(7.5,2));
+  private static final double ARROW_SIZE = 30;
 
   private final String[][] maze1 = {{"dr","lr","ld","dr","lr","l"}, {"ud*","dr","ul","ur","lr","ld"}, {"ud","ur","ld","dr","lr","uld*"}, {"ud","r","ulr","ul","r","uld"}, {"udr","lr","ld","dr","r","ud"}, {"ur", "l", "ur", "ul", "r", "ul"}};
   private final String[][] maze2 = {{"r","ldr","l","dr","ldr","l"}, {"dr","ul","dr","ul","ur*","ld"}, {"ud","dr","ul","dr","lr","uld"}, {"udr","ul*","dr","ul","d","ud"}, {"ud","d","ud","dr","ul","ud"}, {"u","ur","ul","ur","lr","ul"}};
@@ -47,8 +51,8 @@ public class MazesModule extends ModuleBase {
       super();
       this.directions = MAZES[mazeIndex][col][row];
 
-      setMinSize(22.5,22.5);
-      setMaxSize(22.5,22.5);
+      setMinSize(CELL_SIZE, CELL_SIZE);
+      setMaxSize(CELL_SIZE,CELL_SIZE);
 
       if (directions.contains("*")) {
         Circle circle = new Circle(10, Color.TRANSPARENT);
@@ -72,7 +76,8 @@ public class MazesModule extends ModuleBase {
 
     public NormalCell(int col, int row) {
       super(col, row);
-      rectangle = new Rectangle(7.5, 7.5, Color.CADETBLUE);
+      rectangle = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.CADETBLUE);
+      StackPane.setAlignment(rectangle, Pos.CENTER);
       getChildren().add(rectangle);
     }
 
@@ -89,25 +94,23 @@ public class MazesModule extends ModuleBase {
     public FinishCell(int col, int row) {
       super(col, row);
 
-      final double height = Math.sqrt(Math.pow(15,2)-Math.pow(7.5,2));
       Polygon tringle = new Polygon(
-        0.0, 0.0,
-        -7.5, height,
-        7.5, height
+              0.0, 0.0,
+              -7.5, TRIANGLE_HEIGHT,
+              7.5, TRIANGLE_HEIGHT
       );
       tringle.setFill(Color.RED);
-      Rotate center = new Rotate(0, 0, height*2/3);
-      tringle.setTranslateX(1);
-      tringle.setTranslateY(-1*(height*2/3-6.5));
-      tringle.getTransforms().add(center);
+      StackPane.setAlignment(tringle, Pos.CENTER);
+      StackPane.setMargin(tringle, new Insets(0, 0, TRIANGLE_HEIGHT/6 + 0.7, 0));
+      getChildren().add(tringle);
+
       Timeline spinner = new Timeline();
       for (int i = 0; i < 360; i++) {
         final int j = i;
-        spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * j), event -> center.setAngle(j)));
+        spinner.getKeyFrames().add(new KeyFrame(Duration.seconds(10.0/360 * j), event -> setRotate(j)));
       }
       spinner.setCycleCount(Timeline.INDEFINITE);
       spinner.play();
-      getChildren().add(tringle);
     }
 
     public void select() {}
@@ -123,9 +126,9 @@ public class MazesModule extends ModuleBase {
       this.direction = direction;
       setOnAction(event -> move());
       setShape(new Polygon(
-        0.0, 0.0,
-        -15.0, 15.0,
-        15.0, 15.0
+        0.0, -7.5,
+        -15.0, 7.5,
+        15.0, 7.5
       ));
       setMinSize(30,15);
       setMaxSize(30,15);
@@ -154,9 +157,7 @@ public class MazesModule extends ModuleBase {
 
   public MazesModule(Bomb bomb) {
     super("Mazes", bomb);
-
     mazeIndex = rand.nextInt(9);
-
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 6; j++) {
         cells[i][j] = new NormalCell(i, j);
@@ -184,49 +185,52 @@ public class MazesModule extends ModuleBase {
   }
 
   private void initGUI() {
-    AnchorPane box = new AnchorPane();
-    initSubPane(box);
-
-    AnchorPane moduleBox = new AnchorPane();
-    moduleBox.setMinSize(150, 150);
-    moduleBox.setMaxSize(150, 150);
-    moduleBox.setStyle("-fx-background-color: midnightblue; -fx-border-color: black; -fx-border-width: 3");
-
-    VBox[] columns =  new VBox[6];
+    GridPane mazeBox = new GridPane();
     for (int i = 0; i < 6; i++) {
-      columns[i] = new VBox(0);
       for (int j = 0; j < 6; j++) {
-        columns[i].getChildren().add(cells[j][i]);
+        GridPane.setConstraints(cells[i][j], j, i);
+        mazeBox.getChildren().add(cells[i][j]);
       }
-      AnchorPane.setLeftAnchor(columns[i], 22.5 * i + 7.5);
-      AnchorPane.setTopAnchor(columns[i], 7.5);
-      moduleBox.getChildren().add(columns[i]);
     }
+    mazeBox.setStyle("-fx-background-color: midnightblue; -fx-border-color: black; -fx-border-width: 3");
+    mazeBox.setMinSize(CELL_SIZE*6+10, CELL_SIZE*6+10); //add double the border width to the width of the cells
+    mazeBox.setMaxSize(CELL_SIZE*6+10, CELL_SIZE*6+10);
+    StackPane.setAlignment(mazeBox, Pos.CENTER);
 
     Arrow up = new Arrow("u");
+    StackPane upBox = new StackPane(up);
+    upBox.setMinSize(ARROW_SIZE, ARROW_SIZE);
+    upBox.setMaxSize(ARROW_SIZE, ARROW_SIZE);
+    StackPane.setAlignment(upBox, Pos.TOP_CENTER);
     
     Arrow left = new Arrow("l");
     left.setRotate(270.0);
+    StackPane leftBox = new StackPane(left);
+    leftBox.setMinSize(ARROW_SIZE, ARROW_SIZE);
+    leftBox.setMaxSize(ARROW_SIZE, ARROW_SIZE);
+    StackPane.setAlignment(leftBox, Pos.CENTER_LEFT);
     
     Arrow down = new Arrow("d");
     down.setRotate(180.0);
-    
+    StackPane downBox = new StackPane(down);
+    downBox.setMinSize(ARROW_SIZE, ARROW_SIZE);
+    downBox.setMaxSize(ARROW_SIZE, ARROW_SIZE);
+    StackPane.setAlignment(downBox, Pos.BOTTOM_CENTER);
+
     Arrow right = new Arrow("r");
     right.setRotate(90.0);
+    StackPane rightBox = new StackPane(right);
+    rightBox.setMinSize(ARROW_SIZE, ARROW_SIZE);
+    rightBox.setMaxSize(ARROW_SIZE, ARROW_SIZE);
+    StackPane.setAlignment(rightBox, Pos.CENTER_RIGHT);
 
-    AnchorPane.setLeftAnchor(moduleBox, 41.5);
-    AnchorPane.setTopAnchor(moduleBox, 41.5);
-    AnchorPane.setLeftAnchor(up, 104.0);
-    AnchorPane.setTopAnchor(up, 20.0);
-    AnchorPane.setLeftAnchor(left, 10.0);
-    AnchorPane.setTopAnchor(left, 104.0);
-    AnchorPane.setLeftAnchor(down, 104.0);
-    AnchorPane.setBottomAnchor(down, 20.0);
-    AnchorPane.setRightAnchor(right, 10.0);
-    AnchorPane.setTopAnchor(right, 104.0);
-    
-    box.getChildren().addAll(moduleBox, up, left, down, right);
-    this.getChildren().add(box);
+    StackPane box = new StackPane(mazeBox, upBox, leftBox, downBox, rightBox);
+    double SIZE = mazeBox.getMinWidth() + 60;
+    box.setMinSize(SIZE, SIZE);
+    box.setMaxSize(SIZE, SIZE);
+    StackPane root = new StackPane(box);
+    initSubPane(root);
+    this.getChildren().addAll(root);
   }
 
   private void moveCursorTo(int col, int row) {
