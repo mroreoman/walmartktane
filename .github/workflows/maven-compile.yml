@@ -32,3 +32,7 @@ jobs:
         run: mvn clean compile --file pom.xml --no-transfer-progress
       - name: mvn javafx:jlink
         run: mvn javafx:jlink --file pom.xml --no-transfer-progress
+      - name: upload build
+        uses: actions/upload-artifact@v4
+        with:
+          path: target/walmartktane.zip
