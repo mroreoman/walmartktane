@@ -106,14 +106,14 @@ public class KeypadsModule extends ModuleBase {
     AnchorPane box = new AnchorPane();
     initSubPane(box);
     
-    AnchorPane.setLeftAnchor(keypads[0].buton, MARGIN);
-    AnchorPane.setBottomAnchor(keypads[0].buton, MARGIN + 80);
-    AnchorPane.setLeftAnchor(keypads[1].buton, MARGIN + 80);
-    AnchorPane.setBottomAnchor(keypads[1].buton, MARGIN + 80);
-    AnchorPane.setLeftAnchor(keypads[2].buton, MARGIN);
-    AnchorPane.setBottomAnchor(keypads[2].buton, MARGIN);
-    AnchorPane.setLeftAnchor(keypads[3].buton, MARGIN + 80);
-    AnchorPane.setBottomAnchor(keypads[3].buton, MARGIN);
+    AnchorPane.setLeftAnchor(keypads[0].buton, PADDING);
+    AnchorPane.setBottomAnchor(keypads[0].buton, PADDING + 80);
+    AnchorPane.setLeftAnchor(keypads[1].buton, PADDING + 80);
+    AnchorPane.setBottomAnchor(keypads[1].buton, PADDING + 80);
+    AnchorPane.setLeftAnchor(keypads[2].buton, PADDING);
+    AnchorPane.setBottomAnchor(keypads[2].buton, PADDING);
+    AnchorPane.setLeftAnchor(keypads[3].buton, PADDING + 80);
+    AnchorPane.setBottomAnchor(keypads[3].buton, PADDING);
 
     for (Keypad keypad : keypads){
       box.getChildren().add(keypad.buton);

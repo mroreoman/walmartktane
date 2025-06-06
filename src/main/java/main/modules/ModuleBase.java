@@ -2,9 +2,11 @@ package main.modules;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
@@ -14,20 +16,17 @@ import javafx.util.Duration;
 import main.Bomb;
 import main.widgets.Edgework;
 
-public abstract class ModuleBase extends Pane {
-  protected final static double MARGIN = 15;
+public abstract class ModuleBase extends Region {
+  private final static double MODULE_SIZE = 233;
+  private final static double LIGHT_RADIUS = 10;
+  protected final static double PADDING = 15;
   
   private Button buton;
-  
-  protected String name;
-  protected Bomb bomb;
+  private final String name;
+  private final Bomb bomb;
+  private final Circle light;
+  private final Timeline timeline;
   private boolean solved = false;
-  private Circle light;
-  private Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-    if (!solved) {
-      light.setFill(Color.TRANSPARENT);
-    }
-  }));
 
   public ModuleBase(Bomb bomb) {
     this("Module", bomb);
@@ -36,11 +35,16 @@ public abstract class ModuleBase extends Pane {
   public ModuleBase(String name, Bomb bomb) {
     this.name = name;
     this.bomb = bomb;
-    setMinSize(233, 233);
-    setMaxSize(233, 233);
+    setMinSize(MODULE_SIZE, MODULE_SIZE);
+    setMaxSize(MODULE_SIZE, MODULE_SIZE);
     setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
-    light = new Circle(getMaxWidth() - (MARGIN + 10), MARGIN + 10, 10, Color.TRANSPARENT);
+    light = new Circle(getMaxWidth() - (PADDING + LIGHT_RADIUS), PADDING + LIGHT_RADIUS, LIGHT_RADIUS, Color.TRANSPARENT);
     light.setStroke(Color.BLACK);
+    timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+      if (!solved) {
+        light.setFill(Color.TRANSPARENT);
+      }
+    }));
     getChildren().add(light);
   }
 
@@ -85,12 +89,6 @@ public abstract class ModuleBase extends Pane {
     pane.setMaxSize(getMaxWidth(), getMaxHeight());
   }
 
-  // protected static final void initButton(Button button) {
-  //   Border old = button.getBorder();
-  //   button.setOnMouseEntered(event -> button.setBorder(new Border()));
-  //   button.setOnMouseExited(event -> button.setBorder(old));
-  // }
-  
   protected final Bomb getBomb() {
     return bomb;
   }

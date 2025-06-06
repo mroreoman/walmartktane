@@ -156,7 +156,7 @@ public class SimonSaysModule extends ModuleBase {
 
   private Simon getSolution(Color flash) {
     if (getEdgework().serialHasVowel()) {
-      if (bomb.getStrikes() == 0) {
+      if (getBomb().getStrikes() == 0) {
         if (flash == COLORS[0]) {
           return simons.get(COLORS[1]);
         } else if (flash == COLORS[1]) {
@@ -166,7 +166,7 @@ public class SimonSaysModule extends ModuleBase {
         } else {
           return simons.get(COLORS[2]);
         }
-      } else if (bomb.getStrikes() == 1) {
+      } else if (getBomb().getStrikes() == 1) {
         if (flash == COLORS[0]) {
           return simons.get(COLORS[3]);
         } else if (flash == COLORS[1]) {
@@ -188,7 +188,7 @@ public class SimonSaysModule extends ModuleBase {
         }
       }
     } else {
-      if (bomb.getStrikes() == 0) {
+      if (getBomb().getStrikes() == 0) {
         if (flash == COLORS[0]) {
           return simons.get(COLORS[1]);
         } else if (flash == COLORS[1]) {
@@ -198,7 +198,7 @@ public class SimonSaysModule extends ModuleBase {
         } else {
           return simons.get(COLORS[0]);
         }
-      } else if (bomb.getStrikes() == 1) {
+      } else if (getBomb().getStrikes() == 1) {
         if (flash == COLORS[0]) {
           return simons.get(COLORS[0]);
         } else if (flash == COLORS[1]) {
