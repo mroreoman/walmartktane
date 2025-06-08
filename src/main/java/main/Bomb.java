@@ -89,8 +89,6 @@ public class Bomb extends Scene {
   }
 
   private void initGUI() {
-    HBox infoBox = new HBox(edgework, timer);
-
     currentModule = new Pane();
     currentModule.setMinSize(233, 233);
     currentModule.setMaxSize(233, 233);
@@ -104,11 +102,11 @@ public class Bomb extends Scene {
     exitButton.setOnAction(event -> exit());
 
     //TODO set column/row percent widths
-    //TODO add exit bomb button
     root.add(moduleButtonsScroll, 0, 0, 1, 2);
     root.add(edgework, 1, 0);
-    root.add(timer, 3, 0);
+    root.add(timer, 2, 0);
     root.add(currentModule, 1, 1, 2, 1);
+    root.add(exitButton, 3, 0);
   }
 
   public void play(Stage stage) {

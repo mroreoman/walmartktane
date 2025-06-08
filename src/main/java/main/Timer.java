@@ -53,7 +53,7 @@ public class Timer extends BorderPane {
         timeline.play();
 
         addEventHandler(KtaneEvent.STRIKE, e -> addStrike()); //TODO test, it can see strikes but idk if logic is correct
-        addEventHandler(KtaneEvent.PAUSE, e -> timeline.pause()); //TODO test
+        addEventHandler(KtaneEvent.PAUSE, e -> timeline.pause()); //TODO test, does not work
         addEventHandler(KtaneEvent.PLAY, e -> timeline.play()); //TODO test
     }
 
