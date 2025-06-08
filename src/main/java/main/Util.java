@@ -72,8 +72,12 @@ public final class Util {
     return arr;
   }
 
+  public static Font font(int size) {
+    return new Font("Roboto Condensed", size);
+  }
+
   public static void setupText(Text text) {
-    text.setFont(Font.font("Roboto Condensed", 15));
+    text.setFont(font(15));
     text.setFill(Color.BLACK);
   }
 
@@ -81,12 +85,6 @@ public final class Util {
     for (Text text: texts) {
       setupText(text);
     }
-  }
-
-  public static String toMinutes(int timeSecs) {
-    int mins = timeSecs / 60;
-    int secs = timeSecs % 60;
-    return mins + ":" + (secs < 10 ? ("0" + secs) : secs);
   }
 
   public static Border goodBorder(Color color) {

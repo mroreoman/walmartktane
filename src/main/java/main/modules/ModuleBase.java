@@ -2,18 +2,18 @@ package main.modules;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Font;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import main.Bomb;
+import main.KtaneEvent;
+import main.ModuleEvent;
+import main.Timer;
 import main.widgets.Edgework;
 
 public abstract class ModuleBase extends Region {
@@ -21,9 +21,9 @@ public abstract class ModuleBase extends Region {
   private final static double LIGHT_RADIUS = 10;
   protected final static double PADDING = 15;
   
-  private Button buton;
   private final String name;
-  private final Bomb bomb;
+  protected final Edgework edgework;
+  protected final Timer timer;
   private final Circle light;
   private final Timeline timeline;
   private boolean solved = false;
@@ -34,7 +34,8 @@ public abstract class ModuleBase extends Region {
   
   public ModuleBase(String name, Bomb bomb) {
     this.name = name;
-    this.bomb = bomb;
+    this.edgework = bomb.getEdgework();
+    this.timer = bomb.getTimer();
     setMinSize(MODULE_SIZE, MODULE_SIZE);
     setMaxSize(MODULE_SIZE, MODULE_SIZE);
     setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
@@ -52,35 +53,22 @@ public abstract class ModuleBase extends Region {
 
   public abstract void pause();
 
-  public final Button getButton() {
-    if (buton == null) {
-      buton = new Button(toString());
-      buton.setOnAction(event -> bomb.setCurrentModule(this));
-      buton.setFont(new Font("Roboto Condensed", 15));
-    }
-    buton.setText(toString());
-    return buton;
-  }
-
-  public final void updateButton() {
-    buton.setText(toString());
-  }
-
   protected final void submit(boolean correct) {
     if (correct) {
       solved = true;
-      bomb.checkDefused(this);
+      fireEvent(new ModuleEvent(this)); //TODO test
       light.setFill(Color.LIME);
     } else {
-      bomb.addStrike();
+      System.out.println("FIRING STRIKE");
+      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
       light.setFill(Color.RED);
       timeline.play();
     }
   }
 
-  protected final void submitSolved(boolean correct) {
+  protected final void submitSolved(boolean correct) { //FIXME this method is sus...
     if (!correct) {
-      bomb.addStrike();
+      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
     }
   }
 
@@ -89,12 +77,12 @@ public abstract class ModuleBase extends Region {
     pane.setMaxSize(getMaxWidth(), getMaxHeight());
   }
 
-  protected final Bomb getBomb() {
-    return bomb;
+  protected final Edgework getEdgework() {
+    return edgework;
   }
 
-  protected final Edgework getEdgework() {
-    return bomb.getEdgework();
+  protected final Timer getTimer() {
+    return timer;
   }
   
   public final boolean isSolved() {

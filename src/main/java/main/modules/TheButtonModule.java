@@ -92,7 +92,7 @@ public class TheButtonModule extends ModuleBase {
       tapButton();
     } else {
       strip.setFill(Color.TRANSPARENT);
-      submit(getBomb().timerContains(stripSolution));
+      submit(timer.contains(stripSolution));
     }
   }
   

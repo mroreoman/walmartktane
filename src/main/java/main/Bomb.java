@@ -1,22 +1,15 @@
 package main;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.lang.RuntimeException;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.paint.Color;
 
 import main.modules.*;
 import main.widgets.Edgework;
@@ -26,24 +19,14 @@ public class Bomb extends Scene {
 
   private static final Random rand = new Random();
 
-  private final int maxStrikes;
-  private final int startTimeSecs;
-
   private Button buton;
   private final Edgework edgework;
-  private final List<ModuleBase> modules;
-  private int strikes = 0;
-  private int timeSecs;
-  private int tick = 0;
-  private boolean running = false;
+  private final Timer timer;
+  private final Map<ModuleBase, Button> modules;
+  private Pane currentModule;
+  private final GridPane root;
   private boolean exploded = false;
   private boolean defused = false;
-
-  private Timeline timeline;
-  private Text[] strikeTexts;
-  private Text timerText;
-  private Pane currentModule;
-  private final BorderPane root;
 
   public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
     this(numModules, startTimeSecs, maxStrikes, allModules);
@@ -58,19 +41,25 @@ public class Bomb extends Scene {
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
   public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList) {
-    super(new BorderPane());
-    root = (BorderPane)getRoot();
-    this.startTimeSecs = startTimeSecs;
-    this.maxStrikes = maxStrikes;
+    super(new GridPane());
+    root = (GridPane)getRoot();
     edgework = new Edgework();
-    modules = new ArrayList<>();
-    timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> tick()));
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    strikeTexts = new Text[maxStrikes - 1];
+    timer = new Timer(maxStrikes, startTimeSecs);
+    modules = new HashMap<>();
     initModules(moduleList);
     initGUI();
 
-    timeline.play();
+    //TODO test event handlers, i think module solved is good
+    addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
+    addEventHandler(KtaneEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
+    addEventHandler(KtaneEvent.EXPLODE, e -> {
+      modules.keySet().forEach(module -> module.setDisable(true));
+      exploded = true;
+    });
+    addEventHandler(KtaneEvent.DEFUSE, e -> {
+      modules.keySet().forEach(module -> module.setDisable(true));
+      defused = true;
+    });
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -88,64 +77,45 @@ public class Bomb extends Scene {
 
     for (Class<? extends ModuleBase> moduleType : moduleList) {
       try {
-        modules.add(moduleType.getConstructor(Bomb.class).newInstance(this));
+        ModuleBase module = moduleType.getConstructor(Bomb.class).newInstance(this);
+        Button buton = new Button(module.toString());
+        buton.setOnAction(event -> setCurrentModule(module));
+        buton.setFont(Util.font(15));
+        modules.put(module, buton);
       } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
         throw new RuntimeException("Bomb could not instantiate " + moduleType.getName(), e);
       }
     }
   }
 
-  private void tick() {
-    if (running) {
-      tick++;
-      if (tick >= maxStrikes + 1 - strikes) {
-        tick = 0;
-        timeSecs++;
-        updateBombText();
-      }
-    }
-    
-    if (timeSecs >= startTimeSecs) {
-      exploded = true;
-      finish();
-    }
-  }
-
   private void initGUI() {
-    for (int i = 0; i < strikeTexts.length; i++) {
-      strikeTexts[i] = new Text("X");
-      Util.setupText(strikeTexts[i]);
-    }
-    timerText = new Text(getTime());
-    Util.setupText(timerText);
-    Button exitButton = new Button("exit");
-    exitButton.setOnAction(event -> exit());
-    HBox timerBox = new HBox(25, new HBox(10, strikeTexts), timerText, exitButton);
-    Region spacer = new Region();
-    HBox.setHgrow(spacer, Priority.ALWAYS);
-    HBox infoBox = new HBox(edgework, spacer, timerBox);
+    HBox infoBox = new HBox(edgework, timer);
 
     currentModule = new Pane();
     currentModule.setMinSize(233, 233);
     currentModule.setMaxSize(233, 233);
 
-    HBox moduleButtons = new HBox(10);
-    for (ModuleBase module: modules) {
-      moduleButtons.getChildren().add(module.getButton());
-    }
-    ScrollPane moduleButtonsScroll = new ScrollPane(moduleButtons);
+    VBox moduleButtonsBox = new VBox(10);
+    moduleButtonsBox.getChildren().addAll(modules.values());
+    ScrollPane moduleButtonsScroll = new ScrollPane(moduleButtonsBox);
     moduleButtonsScroll.setPrefHeight(50);
 
-    root.setTop(infoBox);
-    root.setCenter(currentModule);
-    root.setBottom(moduleButtonsScroll);
+    Button exitButton = new Button("exit");
+    exitButton.setOnAction(event -> exit());
+
+    //TODO set column/row percent widths
+    //TODO add exit bomb button
+    root.add(moduleButtonsScroll, 0, 0, 1, 2);
+    root.add(edgework, 1, 0);
+    root.add(timer, 3, 0);
+    root.add(currentModule, 1, 1, 2, 1);
   }
 
   public void play(Stage stage) {
     stage.setScene(this);
     if (!exploded && !defused) {
-      running = true;
-      for (ModuleBase module: modules) {
+      KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PLAY));
+      for (ModuleBase module : modules.keySet()) {
         module.play();
       }
     }
@@ -153,69 +123,30 @@ public class Bomb extends Scene {
 
   /**called to stop bomb prematurely (should only be when application is closed)*/
   public void stop() {
-    timeline.pause();
+//    timeline.pause();
+    KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PAUSE));
   }
 
   /**called when exiting bomb from exit button*/
   private void exit() {
-    running = false;
-    for (ModuleBase module: modules) {
-      module.pause();
-    }
+    KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PAUSE));
     KTANE.openMenu();
-  }
-
-  /**called when bomb is defused or exploded*/
-  private void finish() {
-    running = false;
-    for (ModuleBase module: modules) {
-      module.pause();
-    }
-    timeline.pause();
-    if (strikes >= maxStrikes) {
-      exploded = true;
-    }
-    updateBombText();
-    for (ModuleBase module: modules) {
-      module.setDisable(true);
-    }
-  }
-  
-  public void addStrike() {
-    strikes++;
-    if (strikes >= maxStrikes) {
-      exploded = true;
-      finish();
-    } else if (strikes > 0) {
-      strikeTexts[strikes - 1].setFill(Color.RED);
-    }
   }
   
   public void checkDefused(ModuleBase currentModule) {
-    currentModule.updateButton();
-    boolean temp = true;
-    for (ModuleBase module: modules) {
-      temp &= module.isSolved();
+    modules.get(currentModule).setText(currentModule.toString());
+    boolean defused = true;
+    for (ModuleBase module : modules.keySet()) {
+      defused &= module.isSolved();
     }
-    if (temp) {
-      defused = true;
-      finish();
+    if (defused) {
+      KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.DEFUSE));
     }
   }
 
   public void setCurrentModule(ModuleBase module) {
     currentModule.getChildren().clear();
     currentModule.getChildren().add(module);
-  }
-
-  private void updateBombText() {
-    if (exploded) {
-      timerText.setText(("Exploded at " + getTime()));
-    } else if (defused) {
-      timerText.setText(("Defused at " + getTime()));
-    } else {
-      timerText.setText(getTime());
-    }
   }
 
   public final Button getButton(Stage stage) {
@@ -228,29 +159,22 @@ public class Bomb extends Scene {
     return buton;
   }
 
-  public boolean timerContains(int i) {
-    return getTime().contains(Integer.toString(i));
-  }
-
-  public String getTime() {
-    return Util.toMinutes(startTimeSecs - timeSecs);
-  }
-
   public Edgework getEdgework() {
     return edgework;
   }
 
-  public int getStrikes() {
-    return strikes;
+  public Timer getTimer() {
+    return timer;
   }
 
-  public String toString() {
-    return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " ")) +
-        "(" +
-        modules.size() + (modules.size() == 1 ? " module, " : " modules, ") +
-        strikes + (strikes == 1 ? " strike, " : " strikes, ") +
-        getTime() +
-        ")";
+  public String toString() { //TODO was the verbose toString necessary
+//    return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " ")) +
+//        "(" +
+//        modules.size() + (modules.size() == 1 ? " module, " : " modules, ") +
+//        strikes + (strikes == 1 ? " strike, " : " strikes, ") +
+//        getTime() +
+//        ")";
+    return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " "));
   }
   
 }
