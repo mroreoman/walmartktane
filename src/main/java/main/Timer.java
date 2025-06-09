@@ -33,13 +33,13 @@ public class Timer extends BorderPane {
         strikeTexts = new Text[maxStrikes - 1];
         for (int i = 0; i < strikeTexts.length; i++) {
             strikeTexts[i] = new Text("X");
-            strikeTexts[i].setFont(Util.font(15));
+            strikeTexts[i].setFont(Util.bodyFont(15));
             strikeTexts[i].setFill(Color.GRAY);
         }
         HBox hbox = new HBox(10, strikeTexts);
         hbox.setAlignment(Pos.TOP_CENTER);
         timerText = new Text(formattedTime());
-        timerText.setFont(Util.font(30));
+        timerText.setFont(Util.bodyFont(30));
         timerText.setFill(Color.BLACK);
 
         setTop(hbox);

@@ -81,7 +81,7 @@ public class Bomb extends Scene {
         ModuleBase module = moduleType.getConstructor(Bomb.class).newInstance(this);
         Button buton = new Button(module.toString());
         buton.setOnAction(event -> setCurrentModule(module));
-        buton.setFont(Util.font(15));
+        buton.setFont(Util.bodyFont(15));
         modules.put(module, buton);
       } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
         throw new RuntimeException("Bomb could not instantiate " + moduleType.getName(), e);
@@ -102,7 +102,6 @@ public class Bomb extends Scene {
     Button exitButton = new Button("exit");
     exitButton.setOnAction(event -> exit());
 
-    //TODO set column/row percent widths
     root.add(timer, 0, 0);
     GridPane.setHalignment(timer, HPos.LEFT);
     GridPane.setValignment(timer, VPos.TOP);
@@ -172,7 +171,7 @@ public class Bomb extends Scene {
     if (buton == null) {
       buton = new Button(toString());
       buton.setOnAction(event -> play(stage));
-      buton.setFont(new Font("Roboto Condensed", 15));
+      buton.setFont(Util.bodyFont(15));
     }
     buton.setText(toString());
     return buton;
@@ -186,13 +185,7 @@ public class Bomb extends Scene {
     return timer;
   }
 
-  public String toString() { //TODO was the verbose toString necessary
-//    return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " ")) +
-//        "(" +
-//        modules.size() + (modules.size() == 1 ? " module, " : " modules, ") +
-//        strikes + (strikes == 1 ? " strike, " : " strikes, ") +
-//        getTime() +
-//        ")";
+  public String toString() {
     return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " "));
   }
   

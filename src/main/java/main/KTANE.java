@@ -71,7 +71,7 @@ public class KTANE extends Application {
 
   private static void initMainMenu() {
     Text title = new Text("WALMART KTANE MENU");
-    title.setFont(new Font("Roboto Slab", 30));
+    title.setFont(Util.titleFont(30));
     title.setX(200);
     title.setY(100);
 
@@ -114,14 +114,14 @@ public class KTANE extends Application {
 
   private static void initBombCreation() {
     Text title = new Text("BOMB CREATION");
-    title.setFont(new Font("Roboto Slab", 50));
+    title.setFont(Util.titleFont(50));
     Text amtText = new Text("How many modules?");
-    amtText.setFont(new Font("Roboto Slab", 20));
+    amtText.setFont(Util.titleFont( 20));
     TextField amtField = new TextField();
     amtField.setMaxWidth(400);
     Util.setupIntField(amtField);
     Text timeText = new Text("How much time?");
-    timeText.setFont(new Font("Robot Slab", 20));
+    timeText.setFont(Util.titleFont(20));
     TextField timeField = new TextField();
     timeField.setMaxWidth(400);
     Util.setupIntField(timeField);
@@ -147,7 +147,7 @@ public class KTANE extends Application {
 
   private static void initStoryMode() {
     Text title = new Text("STORY MODE");
-    title.setFont(new Font("Roboto Slab", 50));
+    title.setFont(Util.titleFont(50));
 
     VBox buttonBox = new VBox(10);
     buttonBox.setAlignment(Pos.TOP_LEFT);

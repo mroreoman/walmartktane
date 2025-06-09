@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 
 import main.Bomb;
+import main.Util;
 
 public class TheButtonModule extends ModuleBase {
   private static final String[] LABELS = {"Abort", "Detonate", "Hold", "Press"};
@@ -66,7 +67,7 @@ public class TheButtonModule extends ModuleBase {
     buton.setTextFill(color == Color.WHITE || color == Color.YELLOW ? Color.BLACK : Color.WHITE);
     buton.setPadding(Insets.EMPTY);
     buton.setStyle("-fx-background-color: #" + color.toString().substring(2,8) + "; -fx-background-radius: 75em; -fx-min-width: 150px; -fx-min-height: 150px; -fx-max-width: 150px; -fx-max-height: 150px;");
-    buton.setFont(new Font("Roboto Condensed", 25));
+    buton.setFont(Util.bodyFont(25));
     buton.setOnMousePressed(event -> press());
     buton.setOnMouseReleased(event -> release());
     
