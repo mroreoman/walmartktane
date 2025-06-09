@@ -1,17 +1,23 @@
 package main;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.lang.RuntimeException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 
 import main.modules.*;
 import main.widgets.Edgework;
@@ -20,15 +26,14 @@ public class Bomb extends Scene {
   public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
   private static final Random rand = new Random();
+  public enum State { RUNNING, EXPLODED, DEFUSED }
 
-  private Button buton;
+  private final GridPane root;
   private final Edgework edgework;
   private final Timer timer;
   private final Map<ModuleBase, Button> modules;
+  private State state;
   private Pane currentModule;
-  private final GridPane root;
-  private boolean exploded = false;
-  private boolean defused = false;
 
   public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
     this(numModules, startTimeSecs, maxStrikes, allModules);
@@ -55,12 +60,14 @@ public class Bomb extends Scene {
     addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
     addEventHandler(BombEvent.EXPLODE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
-      exploded = true;
+      state = State.EXPLODED;
     });
     addEventHandler(BombEvent.DEFUSE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
-      defused = true;
+      state = State.DEFUSED;
     });
+
+    state = State.RUNNING;
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -73,7 +80,7 @@ public class Bomb extends Scene {
 
   private void initModules(List<Class<? extends ModuleBase>> moduleList) {
     if (moduleList == null || moduleList.isEmpty()) {
-      throw new IllegalArgumentException("Module types cannot be null or empty"); //TODO cancel bomb creation
+      throw new IllegalArgumentException("Module types cannot be null or empty");
     }
 
     for (Class<? extends ModuleBase> moduleType : moduleList) {
@@ -129,9 +136,8 @@ public class Bomb extends Scene {
     root.getRowConstraints().addAll(row1, row2);
   }
 
-  public void play(Stage stage) {
-    stage.setScene(this);
-    if (!exploded && !defused) {
+  public void play() {
+    if (state == State.RUNNING) {
       BombEvent.fireEvent(timer, new BombEvent(BombEvent.PLAY));
       for (ModuleBase module : modules.keySet()) {
         module.play();
@@ -141,13 +147,15 @@ public class Bomb extends Scene {
 
   /**called to stop bomb prematurely (should only be when application is closed)*/
   public void stop() {
-//    timeline.pause();
+    System.out.println("Bomb.stop() called");
     BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
   }
 
   /**called when exiting bomb from exit button*/
   private void exit() {
-    BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
+    if (state == State.RUNNING) {
+      BombEvent.fireEvent(timer, new BombEvent(BombEvent.EXPLODE));
+    }
     KTANE.openMenu();
   }
   
@@ -167,16 +175,6 @@ public class Bomb extends Scene {
     currentModule.getChildren().add(module);
   }
 
-  public final Button getButton(Stage stage) {
-    if (buton == null) {
-      buton = new Button(toString());
-      buton.setOnAction(event -> play(stage));
-      buton.setFont(Util.bodyFont(15));
-    }
-    buton.setText(toString());
-    return buton;
-  }
-
   public Edgework getEdgework() {
     return edgework;
   }
@@ -186,7 +184,7 @@ public class Bomb extends Scene {
   }
 
   public String toString() {
-    return "Bomb" + (exploded ? " - Exploded " : (defused ? " - Defused " : " "));
+    return "Bomb" + (state != State.RUNNING ? " - " + state : "");
   }
   
 }

@@ -4,10 +4,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Region;
-import javafx.scene.shape.Circle;
-import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
 import javafx.util.Duration;
 
 import main.Bomb;
@@ -59,7 +60,6 @@ public abstract class ModuleBase extends Region {
       fireEvent(new ModuleEvent(this, ModuleEvent.SOLVE));
       light.setFill(Color.LIME);
     } else {
-      System.out.println("FIRING STRIKE");
       BombEvent.fireEvent(timer, new BombEvent(BombEvent.STRIKE));
       light.setFill(Color.RED);
       timeline.play();
