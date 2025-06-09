@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.lang.RuntimeException;
 
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -45,18 +47,17 @@ public class Bomb extends Scene {
     root = (GridPane)getRoot();
     edgework = new Edgework();
     timer = new Timer(maxStrikes, startTimeSecs);
-    modules = new HashMap<>();
+    modules = new LinkedHashMap<>();
     initModules(moduleList);
     initGUI();
 
-    //TODO test event handlers, i think module solved is good
     addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
-    addEventHandler(KtaneEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
-    addEventHandler(KtaneEvent.EXPLODE, e -> {
+    addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
+    addEventHandler(BombEvent.EXPLODE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
       exploded = true;
     });
-    addEventHandler(KtaneEvent.DEFUSE, e -> {
+    addEventHandler(BombEvent.DEFUSE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
       defused = true;
     });
@@ -102,17 +103,37 @@ public class Bomb extends Scene {
     exitButton.setOnAction(event -> exit());
 
     //TODO set column/row percent widths
-    root.add(moduleButtonsScroll, 0, 0, 1, 2);
+    root.add(timer, 0, 0);
+    GridPane.setHalignment(timer, HPos.LEFT);
+    GridPane.setValignment(timer, VPos.TOP);
     root.add(edgework, 1, 0);
-    root.add(timer, 2, 0);
+    root.add(exitButton, 2, 0);
+    GridPane.setHalignment(exitButton, HPos.RIGHT);
+    GridPane.setValignment(exitButton, VPos.TOP);
+    root.add(moduleButtonsScroll, 0, 1);
     root.add(currentModule, 1, 1, 2, 1);
-    root.add(exitButton, 3, 0);
+
+    root.setHgap(10);
+    root.setVgap(10);
+
+    ColumnConstraints col1 = new ColumnConstraints();
+    col1.setPercentWidth(25);
+    ColumnConstraints col2 = new ColumnConstraints();
+    col2.setPercentWidth(50);
+    ColumnConstraints col3 = new ColumnConstraints();
+    col3.setPercentWidth(25);
+    root.getColumnConstraints().addAll(col1, col2, col3);
+
+    RowConstraints row1 = new RowConstraints();
+    RowConstraints row2 = new RowConstraints();
+    row2.setVgrow(Priority.ALWAYS);
+    root.getRowConstraints().addAll(row1, row2);
   }
 
   public void play(Stage stage) {
     stage.setScene(this);
     if (!exploded && !defused) {
-      KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PLAY));
+      BombEvent.fireEvent(timer, new BombEvent(BombEvent.PLAY));
       for (ModuleBase module : modules.keySet()) {
         module.play();
       }
@@ -122,12 +143,12 @@ public class Bomb extends Scene {
   /**called to stop bomb prematurely (should only be when application is closed)*/
   public void stop() {
 //    timeline.pause();
-    KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PAUSE));
+    BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
   }
 
   /**called when exiting bomb from exit button*/
   private void exit() {
-    KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.PAUSE));
+    BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
     KTANE.openMenu();
   }
   
@@ -138,7 +159,7 @@ public class Bomb extends Scene {
       defused &= module.isSolved();
     }
     if (defused) {
-      KtaneEvent.fireEvent(this, new KtaneEvent(KtaneEvent.DEFUSE));
+      BombEvent.fireEvent(timer, new BombEvent(BombEvent.DEFUSE));
     }
   }
 

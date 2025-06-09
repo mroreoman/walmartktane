@@ -114,7 +114,7 @@ public class WhosOnFirstModule extends ModuleBase {
         submitSolved(false);
         return;
       }
-      if (label == getSolution()) {
+      if (label.equals(getSolution())) {
         lights[2 - stage++].setFill(Color.LIME);
         if (stage >= 3) {
           submit(true);
@@ -196,7 +196,7 @@ public class WhosOnFirstModule extends ModuleBase {
     for (String word: solution) {
       if (answer.equals("")) {
         for (WOF buton: wofs) {
-          if (buton.label == word) {
+          if (buton.label.equals(word)) {
             answer = word;
             break;
           }

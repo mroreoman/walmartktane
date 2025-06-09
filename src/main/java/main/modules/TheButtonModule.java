@@ -41,9 +41,9 @@ public class TheButtonModule extends ModuleBase {
   }
 
   public void setSolution() {
-    if (color == Color.BLUE && label == "Abort") {
+    if (color == Color.BLUE && label.equals("Abort")) {
       tapSolve = false;
-    } else if (getEdgework().numBatteries() > 1 && label == ("Detonate")) {
+    } else if (getEdgework().numBatteries() > 1 && label.equals("Detonate")) {
       tapSolve = true;
     } else if (color == Color.WHITE && getEdgework().hasIndicator("CAR", true)) {
       tapSolve = false;
@@ -51,7 +51,7 @@ public class TheButtonModule extends ModuleBase {
       tapSolve = true;
     } else if (color == Color.YELLOW) {
       tapSolve = false;
-    } else if (color == Color.RED && label == "Hold") {
+    } else if (color == Color.RED && label.equals("Hold")) {
       tapSolve = true;
     } else {
       tapSolve = false;

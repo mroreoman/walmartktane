@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import main.Bomb;
-import main.KtaneEvent;
+import main.BombEvent;
 import main.ModuleEvent;
 import main.Timer;
 import main.widgets.Edgework;
@@ -56,11 +56,11 @@ public abstract class ModuleBase extends Region {
   protected final void submit(boolean correct) {
     if (correct) {
       solved = true;
-      fireEvent(new ModuleEvent(this)); //TODO test
+      fireEvent(new ModuleEvent(this, ModuleEvent.SOLVE));
       light.setFill(Color.LIME);
     } else {
       System.out.println("FIRING STRIKE");
-      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
+      BombEvent.fireEvent(timer, new BombEvent(BombEvent.STRIKE));
       light.setFill(Color.RED);
       timeline.play();
     }
@@ -68,7 +68,7 @@ public abstract class ModuleBase extends Region {
 
   protected final void submitSolved(boolean correct) { //FIXME this method is sus...
     if (!correct) {
-      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
+      BombEvent.fireEvent(timer, new BombEvent(BombEvent.STRIKE));
     }
   }
 

@@ -9,8 +9,8 @@ public class ModuleEvent extends Event {
 
     private final ModuleBase module;
 
-    public ModuleEvent(ModuleBase module) {
-        super(SOLVE);
+    public ModuleEvent(ModuleBase module, EventType<ModuleEvent> eventType) {
+        super(eventType);
         this.module = module;
     }
 
