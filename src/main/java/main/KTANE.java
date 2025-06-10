@@ -161,6 +161,8 @@ public class KTANE extends Application {
     chapterTitle.setFont(new Font("Roboto Slab", 30));
 
     buttonBox = new VBox(10);
+    buttonBox.setMinHeight(235);
+    buttonBox.setMaxHeight(235);
     buttonBox.setAlignment(Pos.CENTER);
     List<StoryModeBomb> chapter = StoryMode.ALL_CHAPTERS.get(chapterNum);
     for (StoryModeBomb storyModeBomb : chapter) {
