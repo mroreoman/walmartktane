@@ -29,6 +29,13 @@ public class KTANE extends Application {
   private static Scene mainMenuScene;
   private static Scene bombCreationScene;
   private static Scene storyModeScene;
+
+  private static int chapterNum;
+  private static Text title;
+  private static VBox buttonBox;
+  private static HBox pageFlipper;
+  private static Button back;
+  private static VBox box;
   
   public static void main(String[] args) {
     launch(args);
@@ -146,29 +153,60 @@ public class KTANE extends Application {
   }
 
   private static void initStoryMode() {
-    Text title = new Text("STORY MODE");
+    title = new Text("STORY MODE");
     title.setFont(new Font("Roboto Slab", 50));
+    
+    chapterNum = 0;
+    Text chapterTitle = new Text("Chapter " + (chapterNum+1));
+    chapterTitle.setFont(new Font("Roboto Slab", 30));
 
-    VBox buttonBox = new VBox(10);
-    buttonBox.setAlignment(Pos.TOP_LEFT);
-    for (List<StoryModeBomb> chapter : StoryMode.ALL_CHAPTERS) {
-      HBox chapterBox = new HBox(10);
-      chapterBox.setAlignment(Pos.TOP_LEFT);
-      for (StoryModeBomb storyModeBomb : chapter) {
-        chapterBox.getChildren().add(createStoryModeButton(storyModeBomb));
-      }
-      buttonBox.getChildren().add(chapterBox);
+    buttonBox = new VBox(10);
+    buttonBox.setAlignment(Pos.CENTER);
+    List<StoryModeBomb> chapter = StoryMode.ALL_CHAPTERS.get(chapterNum);
+    for (StoryModeBomb storyModeBomb : chapter) {
+      buttonBox.getChildren().add(createStoryModeButton(storyModeBomb));
     }
-    ScrollPane buttonScroll = new ScrollPane(buttonBox);
-    buttonScroll.setMaxWidth(300);
 
-    Button back = new Button("Back");
+    Button previous = new Button("Previous");
+    previous.setOnAction(event -> backward());
+
+    Button next = new Button("Next");
+    next.setOnAction(event -> forward());
+    
+    pageFlipper = new HBox(100, previous, next);
+    pageFlipper.setAlignment(Pos.CENTER);
+
+    back = new Button("Back");
     back.setOnAction(event -> openMenu());
 
-    VBox box = new VBox(25, title, buttonScroll, back);
+    box = new VBox(10, title, chapterTitle, buttonBox, pageFlipper, back);
     box.setAlignment(Pos.CENTER);
-    VBox.setVgrow(buttonScroll, Priority.ALWAYS);
     storyModeScene = new Scene(box);
+  }
+
+  private static void forward() {
+    chapterNum++;
+    updateGUI();
+  }
+
+  private static void backward() {
+    chapterNum--;
+    updateGUI();
+  }
+
+  private static void updateGUI() {
+    buttonBox.getChildren().clear();
+    box.getChildren().clear();
+
+    Text chapterTitle = new Text("Chapter " + (chapterNum+1));
+    chapterTitle.setFont(new Font("Roboto Slab", 30));
+
+    List<StoryModeBomb> chapter = StoryMode.ALL_CHAPTERS.get(chapterNum);
+    for (StoryModeBomb storyModeBomb : chapter) {
+      buttonBox.getChildren().add(createStoryModeButton(storyModeBomb));
+    }
+
+    box.getChildren().addAll(title, chapterTitle, buttonBox, pageFlipper, back);
   }
 
   private static Button createStoryModeButton(StoryMode.StoryModeBomb storyModeBomb) {
