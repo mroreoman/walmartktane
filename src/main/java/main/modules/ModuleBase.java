@@ -2,30 +2,31 @@ package main.modules;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.control.Button;
-import javafx.scene.text.Font;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import main.Bomb;
+import main.KtaneEvent;
+import main.ModuleEvent;
+import main.Timer;
 import main.widgets.Edgework;
 
-public abstract class ModuleBase extends Pane {
-  protected final static double MARGIN = 15;
+public abstract class ModuleBase extends Region {
+  private final static double MODULE_SIZE = 233;
+  private final static double LIGHT_RADIUS = 10;
+  protected final static double PADDING = 15;
   
-  private Button buton;
-  
-  protected String name;
-  protected Bomb bomb;
+  private final String name;
+  protected final Edgework edgework;
+  protected final Timer timer;
+  private final Circle light;
+  private final Timeline timeline;
   private boolean solved = false;
-  private Circle light;
-  private Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-    if (!solved) {
-      light.setFill(Color.TRANSPARENT);
-    }
-  }));
 
   public ModuleBase(Bomb bomb) {
     this("Module", bomb);
@@ -33,11 +34,18 @@ public abstract class ModuleBase extends Pane {
   
   public ModuleBase(String name, Bomb bomb) {
     this.name = name;
-    this.bomb = bomb;
-    setMinSize(233, 233);
-    setMaxSize(233, 233);
-    light = new Circle(getMaxWidth() - (MARGIN + 10), MARGIN + 10, 10, Color.TRANSPARENT);
+    this.edgework = bomb.getEdgework();
+    this.timer = bomb.getTimer();
+    setMinSize(MODULE_SIZE, MODULE_SIZE);
+    setMaxSize(MODULE_SIZE, MODULE_SIZE);
+    setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
+    light = new Circle(getMaxWidth() - (PADDING + LIGHT_RADIUS), PADDING + LIGHT_RADIUS, LIGHT_RADIUS, Color.TRANSPARENT);
     light.setStroke(Color.BLACK);
+    timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+      if (!solved) {
+        light.setFill(Color.TRANSPARENT);
+      }
+    }));
     getChildren().add(light);
   }
 
@@ -45,39 +53,22 @@ public abstract class ModuleBase extends Pane {
 
   public abstract void pause();
 
-  public final Button getButton() {
-    if (buton == null) {
-      buton = new Button(toString());
-      buton.setOnAction(event -> bomb.setCurrentModule(this));
-      buton.setFont(new Font("Roboto Condensed", 15));
-    }
-    return buton;
-  }
-
-  public final boolean updateButton() {
-    if (buton.getText().equals(toString())) {
-      return false;
-    } else {
-      buton.setText(toString());
-      return true;
-    }
-  }
-
   protected final void submit(boolean correct) {
     if (correct) {
       solved = true;
-      bomb.checkDefused(this);
+      fireEvent(new ModuleEvent(this)); //TODO test
       light.setFill(Color.LIME);
     } else {
-      bomb.addStrike();
+      System.out.println("FIRING STRIKE");
+      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
       light.setFill(Color.RED);
       timeline.play();
     }
   }
 
-  protected final void submitSolved(boolean correct) {
+  protected final void submitSolved(boolean correct) { //FIXME this method is sus...
     if (!correct) {
-      bomb.addStrike();
+      KtaneEvent.fireEvent(timer, new KtaneEvent(KtaneEvent.STRIKE));
     }
   }
 
@@ -86,18 +77,12 @@ public abstract class ModuleBase extends Pane {
     pane.setMaxSize(getMaxWidth(), getMaxHeight());
   }
 
-  // protected static final void initButton(Button button) {
-  //   Border old = button.getBorder();
-  //   button.setOnMouseEntered(event -> button.setBorder(new Border()));
-  //   button.setOnMouseExited(event -> button.setBorder(old));
-  // }
-  
-  protected final Bomb getBomb() {
-    return bomb;
+  protected final Edgework getEdgework() {
+    return edgework;
   }
 
-  protected final Edgework getEdgework() {
-    return bomb.getEdgework();
+  protected final Timer getTimer() {
+    return timer;
   }
   
   public final boolean isSolved() {

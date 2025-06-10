@@ -1,10 +1,13 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -17,143 +20,56 @@ import javafx.scene.text.Text;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 
-import main.modules.*;
+import main.StoryMode.StoryModeBomb;
 
 public class KTANE extends Application {
-  private static ArrayList<Bomb> bombs = new ArrayList<Bomb>();
+  private static final List<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
   private static Stage stage;
-  private static Scene menuScene;
-
-  private static TextField tf;
+  private static Scene mainMenuScene;
+  private static Scene bombCreationScene;
+  private static Scene storyModeScene;
   
   public static void main(String[] args) {
     launch(args);
   }
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
+    KTANE.stage = stage;
+    initMainMenu();
+    initBombCreation();
+    initStoryMode();
+
     stage.setTitle("Walmart KTANE");
-    stage.getIcons().add(new Image(KTANE.class.getResourceAsStream("walmartktaneicon.png")));
+    stage.getIcons().add(new Image(Objects.requireNonNull(KTANE.class.getResourceAsStream("walmartktaneicon.png"))));
     stage.setWidth(750);
     stage.setHeight(475);
-    KTANE.stage = stage;
-    
-    Text welcome = new Text("Welcome to Walmart KTANE.");
-    welcome.setFont(new Font("Roboto Slab", 50));
-    Button buton = new Button("Start");
-    buton.setScaleX(5);
-    buton.setScaleY(5);
-    buton.setOnAction(event -> openMenu());
-    VBox root = new VBox(100, welcome, buton, new Text());
-    root.setAlignment(Pos.CENTER);
-    
-    stage.setScene(new Scene(root));
+    stage.setScene(mainMenuScene);
     stage.show();
   }
 
   @Override
-  public void stop() throws Exception {
+  public void stop() {
     for (Bomb bomb: bombs) {
       bomb.stop();
     }
   }
   
   public static void openMenu() {
-    if (menuScene == null) {
-      initMenu();
-    }
     bombButtons.getChildren().clear();
     for (Bomb bomb: bombs) {
-      bombButtons.getChildren().add(bomb.getButton());
-      bomb.updateButton();
+      bombButtons.getChildren().add(bomb.getButton(stage));
     }
-    stage.setScene(menuScene);
-  }
-
-  private static void createBomb() {
-    Text title = new Text("BOMB CREATION");
-    title.setFont(new Font("Roboto Slab", 50));
-    Text amtText = new Text("How many modules?");
-    amtText.setFont(new Font("Roboto Slab", 20));
-    TextField amtField = new TextField();
-    amtField.setMaxWidth(400);
-    Util.setupIntField(amtField);
-    Text timeText = new Text("How much time?");
-    timeText.setFont(new Font("Robot Slab", 20));
-    TextField timeField = new TextField();
-    timeField.setMaxWidth(400);
-    Util.setupIntField(timeField);
-    Button create = new Button("Create Bomb");
-    create.setOnAction(event -> {
-      try {
-        bombs.add(new Bomb(Integer.parseInt(amtField.getText()), Integer.parseInt(timeField.getText())));
-        openMenu();
-      } catch (NumberFormatException e) { System.out.println("Invalid input"); }
-    });
-    Button back = new Button("Back");
-    back.setOnAction(event -> openMenu());
-    HBox amount = new HBox(10, amtText, amtField);
-    amount.setAlignment(Pos.CENTER);
-    HBox time = new HBox(10, timeText, timeField);
-    time.setAlignment(Pos.CENTER);
-    HBox buttons = new HBox(10, create, back);
-    buttons.setAlignment(Pos.CENTER);
-    VBox box = new VBox(25, title, amount, time, buttons);
-    box.setAlignment(Pos.CENTER);
-    stage.setScene(new Scene(box));
-  }
-
-  private static void playBomb(int bombIndex) {
-    try {
-      bombs.get(bombIndex).play();
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println("Invalid bomb number");
-    }
+    stage.setScene(mainMenuScene);
   }
 
   private static void quickPlay() {
-    bombs.add(new Bomb());
-    playBomb(bombs.size() - 1);
+    bombs.add(new Bomb(5, 300, 3));
+    bombs.getLast().play(stage);
   }
 
-  private static void storyMode() {
-    Text title = new Text("STORY MODE");
-    title.setFont(new Font("Roboto Slab", 50));
-
-    Button theFirstBomb = new Button("The First Bomb");
-    theFirstBomb.setOnAction(event -> {
-      Class[][] moduleTypes = {{WiresModule.class}, {TheButtonModule.class}, {KeypadsModule.class}};
-      int numModules = moduleTypes.length;
-      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-      playBomb(bombs.size()-1);
-    });
-
-    Button somethingOldSomethingNew = new Button("Something Old, Something New");
-    somethingOldSomethingNew.setOnAction(event -> {
-      Class[][] moduleTypes = {{WiresModule.class, TheButtonModule.class, KeypadsModule.class}, {WiresModule.class, TheButtonModule.class, KeypadsModule.class}, {SimonSaysModule.class, MemoryModule.class, MazesModule.class}};
-      int numModules = moduleTypes.length;
-      bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-      playBomb(bombs.size()-1);
-    });
-
-    // Button theBigBomb = new Button("The Big Bomb"); // this one does not work right now
-    // theBigBomb.setOnAction(event -> {
-    //   Class[] moduleTypes = {WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class};
-    //   int numModules = moduleTypes.length;
-    //   bombs.add(new Bomb(300, 3, numModules, moduleTypes));
-    //   playBomb(bombs.size()-1);
-    // });
-    
-    Button back = new Button("Back");
-    back.setOnAction(event -> openMenu());
-    
-    VBox box = new VBox(25, title, theFirstBomb, somethingOldSomethingNew, back);
-    box.setAlignment(Pos.CENTER);
-    stage.setScene(new Scene(box));
-  }
-
-  private static void initMenu() {
+  private static void initMainMenu() {
     Text title = new Text("WALMART KTANE MENU");
     title.setFont(new Font("Roboto Slab", 30));
     title.setX(200);
@@ -162,12 +78,12 @@ public class KTANE extends Application {
     Button story = new Button("Story mode");
     story.setScaleX(1.75);
     story.setScaleY(1.75);
-    story.setOnAction(event -> storyMode());
+    story.setOnAction(event -> stage.setScene(storyModeScene));
     
     Button create = new Button("Create bomb");
     create.setScaleX(1.75);
     create.setScaleY(1.75);
-    create.setOnAction(event -> createBomb());
+    create.setOnAction(event -> stage.setScene(bombCreationScene));
     
     Button quickPlay = new Button ("Quick play");
     quickPlay.setScaleX(1.75);
@@ -193,11 +109,75 @@ public class KTANE extends Application {
     bombButtonsBox.setLayoutY(150);
     
     Group root = new Group(title, menuButtons, bombButtonsBox);
-    menuScene = new Scene(root);
+    mainMenuScene = new Scene(root);
   }
 
-  public static Stage getStage() {
-    return stage;
+  private static void initBombCreation() {
+    Text title = new Text("BOMB CREATION");
+    title.setFont(new Font("Roboto Slab", 50));
+    Text amtText = new Text("How many modules?");
+    amtText.setFont(new Font("Roboto Slab", 20));
+    TextField amtField = new TextField();
+    amtField.setMaxWidth(400);
+    Util.setupIntField(amtField);
+    Text timeText = new Text("How much time?");
+    timeText.setFont(new Font("Robot Slab", 20));
+    TextField timeField = new TextField();
+    timeField.setMaxWidth(400);
+    Util.setupIntField(timeField);
+    Button create = new Button("Create Bomb");
+    create.setOnAction(event -> {
+      try {
+        bombs.add(new Bomb(Integer.parseInt(amtField.getText()), Integer.parseInt(timeField.getText()), 2));
+        openMenu();
+      } catch (NumberFormatException e) { System.out.println("Invalid input"); }
+    });
+    Button back = new Button("Back");
+    back.setOnAction(event -> openMenu());
+    HBox amount = new HBox(10, amtText, amtField);
+    amount.setAlignment(Pos.CENTER);
+    HBox time = new HBox(10, timeText, timeField);
+    time.setAlignment(Pos.CENTER);
+    HBox buttons = new HBox(10, create, back);
+    buttons.setAlignment(Pos.CENTER);
+    VBox box = new VBox(25, title, amount, time, buttons);
+    box.setAlignment(Pos.CENTER);
+    bombCreationScene = new Scene(box);
+  }
+
+  private static void initStoryMode() {
+    Text title = new Text("STORY MODE");
+    title.setFont(new Font("Roboto Slab", 50));
+
+    VBox buttonBox = new VBox(10);
+    buttonBox.setAlignment(Pos.TOP_LEFT);
+    for (List<StoryModeBomb> chapter : StoryMode.ALL_CHAPTERS) {
+      HBox chapterBox = new HBox(10);
+      chapterBox.setAlignment(Pos.TOP_LEFT);
+      for (StoryModeBomb storyModeBomb : chapter) {
+        chapterBox.getChildren().add(createStoryModeButton(storyModeBomb));
+      }
+      buttonBox.getChildren().add(chapterBox);
+    }
+    ScrollPane buttonScroll = new ScrollPane(buttonBox);
+    buttonScroll.setMaxWidth(300);
+
+    Button back = new Button("Back");
+    back.setOnAction(event -> openMenu());
+
+    VBox box = new VBox(25, title, buttonScroll, back);
+    box.setAlignment(Pos.CENTER);
+    VBox.setVgrow(buttonScroll, Priority.ALWAYS);
+    storyModeScene = new Scene(box);
+  }
+
+  private static Button createStoryModeButton(StoryMode.StoryModeBomb storyModeBomb) {
+    Button button = new Button(storyModeBomb.name());
+    button.setOnAction(event -> {
+      bombs.add(storyModeBomb.initialize());
+      bombs.getLast().play(stage);
+    });
+    return button;
   }
   
 }

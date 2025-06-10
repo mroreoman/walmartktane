@@ -73,10 +73,10 @@ public class TheButtonModule extends ModuleBase {
     strip = new Rectangle(25, 125, Color.TRANSPARENT);
     strip.setStroke(Color.BLACK);
 
-    AnchorPane.setLeftAnchor(buton, MARGIN);
-    AnchorPane.setBottomAnchor(buton, MARGIN);
-    AnchorPane.setRightAnchor(strip, MARGIN);
-    AnchorPane.setBottomAnchor(strip, MARGIN);
+    AnchorPane.setLeftAnchor(buton, PADDING);
+    AnchorPane.setBottomAnchor(buton, PADDING);
+    AnchorPane.setRightAnchor(strip, PADDING);
+    AnchorPane.setBottomAnchor(strip, PADDING);
     box.getChildren().add(buton);
     box.getChildren().add(strip);
     this.getChildren().add(box);
@@ -92,7 +92,7 @@ public class TheButtonModule extends ModuleBase {
       tapButton();
     } else {
       strip.setFill(Color.TRANSPARENT);
-      submit(bomb.timerContains(stripSolution));
+      submit(timer.contains(stripSolution));
     }
   }
   
