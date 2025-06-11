@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -97,7 +98,11 @@ public class KTANE extends Application {
     quickPlay.setFont(Util.bodyFont(25));
     quickPlay.setOnAction(event -> quickPlay());
 
-    VBox menuButtons = new VBox(25, story, create, quickPlay);
+    Button exit = new Button ("Exit");
+    exit.setFont(Util.bodyFont(25));
+    exit.setOnAction(event -> Platform.exit());
+
+    VBox menuButtons = new VBox(25, story, create, quickPlay, exit);
 
     bombButtons = new VBox(10);
     ScrollPane bombButtonsScroll = new ScrollPane(bombButtons);
