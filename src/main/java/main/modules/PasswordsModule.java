@@ -123,7 +123,7 @@ public class PasswordsModule extends ModuleBase {
         }
       }
       if (stage == 5) {
-        if (solution == "") {
+        if (solution.equals("")) {
           solution = password;
         } else {
           return false;

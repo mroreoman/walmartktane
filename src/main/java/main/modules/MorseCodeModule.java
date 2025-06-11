@@ -196,7 +196,7 @@ public class MorseCodeModule extends ModuleBase {
     screen = new StackPane();
     frqText = new Text("3.505 MHz");
     frqText.setFill(Color.ORANGE);
-    frqText.setFont(new Font("Roboto", 20));
+    frqText.setFont(Font.font("Roboto", 20));
     screen.getChildren().addAll(new Rectangle(125, 40, Color.BLACK), frqText);
     Button rightArrow = new Button();
     rightArrow.setShape(new Polygon(new double[] {

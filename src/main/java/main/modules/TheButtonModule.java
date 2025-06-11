@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 
 import main.Bomb;
+import main.Util;
 
 public class TheButtonModule extends ModuleBase {
   private static final String[] LABELS = {"Abort", "Detonate", "Hold", "Press"};
@@ -41,9 +42,9 @@ public class TheButtonModule extends ModuleBase {
   }
 
   public void setSolution() {
-    if (color == Color.BLUE && label == "Abort") {
+    if (color == Color.BLUE && label.equals("Abort")) {
       tapSolve = false;
-    } else if (getEdgework().numBatteries() > 1 && label == ("Detonate")) {
+    } else if (getEdgework().numBatteries() > 1 && label.equals("Detonate")) {
       tapSolve = true;
     } else if (color == Color.WHITE && getEdgework().hasIndicator("CAR", true)) {
       tapSolve = false;
@@ -51,7 +52,7 @@ public class TheButtonModule extends ModuleBase {
       tapSolve = true;
     } else if (color == Color.YELLOW) {
       tapSolve = false;
-    } else if (color == Color.RED && label == "Hold") {
+    } else if (color == Color.RED && label.equals("Hold")) {
       tapSolve = true;
     } else {
       tapSolve = false;
@@ -66,7 +67,7 @@ public class TheButtonModule extends ModuleBase {
     buton.setTextFill(color == Color.WHITE || color == Color.YELLOW ? Color.BLACK : Color.WHITE);
     buton.setPadding(Insets.EMPTY);
     buton.setStyle("-fx-background-color: #" + color.toString().substring(2,8) + "; -fx-background-radius: 75em; -fx-min-width: 150px; -fx-min-height: 150px; -fx-max-width: 150px; -fx-max-height: 150px;");
-    buton.setFont(new Font("Roboto Condensed", 25));
+    buton.setFont(Util.bodyFont(25));
     buton.setOnMousePressed(event -> press());
     buton.setOnMouseReleased(event -> release());
     

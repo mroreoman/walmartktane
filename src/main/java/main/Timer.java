@@ -33,13 +33,13 @@ public class Timer extends BorderPane {
         strikeTexts = new Text[maxStrikes - 1];
         for (int i = 0; i < strikeTexts.length; i++) {
             strikeTexts[i] = new Text("X");
-            strikeTexts[i].setFont(Util.font(15));
+            strikeTexts[i].setFont(Util.bodyFont(15));
             strikeTexts[i].setFill(Color.GRAY);
         }
         HBox hbox = new HBox(10, strikeTexts);
         hbox.setAlignment(Pos.TOP_CENTER);
         timerText = new Text(formattedTime());
-        timerText.setFont(Util.font(30));
+        timerText.setFont(Util.bodyFont(30));
         timerText.setFill(Color.BLACK);
 
         setTop(hbox);
@@ -52,9 +52,9 @@ public class Timer extends BorderPane {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        addEventHandler(KtaneEvent.STRIKE, e -> addStrike()); //TODO test, it can see strikes but idk if logic is correct
-        addEventHandler(KtaneEvent.PAUSE, e -> timeline.pause()); //TODO test, does not work
-        addEventHandler(KtaneEvent.PLAY, e -> timeline.play()); //TODO test
+        addEventHandler(BombEvent.STRIKE, e -> addStrike());
+        addEventHandler(BombEvent.PAUSE, e -> timeline.pause());
+        addEventHandler(BombEvent.PLAY, e -> timeline.play());
     }
 
     private void tick() {
@@ -70,17 +70,16 @@ public class Timer extends BorderPane {
         timerText.setText(formattedTime()); //updateBombText();
 
         if (timeSecs.get() == 0) {
-            fireEvent(new KtaneEvent(KtaneEvent.EXPLODE));
+            fireEvent(new BombEvent(BombEvent.EXPLODE));
         }
     }
 
     private void addStrike() {
-        System.out.println("STRIKE!");
         strikesRemaining.set(strikesRemaining.get() - 1);
         if (strikesRemaining.get() > 0) {
             strikeTexts[strikeTexts.length - strikesRemaining.get()].setFill(Color.RED);
         } else if (strikesRemaining.get() == 0) {
-            fireEvent(new KtaneEvent(KtaneEvent.EXPLODE));
+            fireEvent(new BombEvent(BombEvent.EXPLODE));
         } else {
             throw new RuntimeException("Attempted to add strike after max strikes");
         }
