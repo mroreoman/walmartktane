@@ -60,7 +60,7 @@ public abstract class ModuleBase extends Region {
       fireEvent(new ModuleEvent(this, ModuleEvent.SOLVE));
       light.setFill(Color.LIME);
     } else {
-      BombEvent.fireEvent(timer, new BombEvent(BombEvent.STRIKE));
+      ModuleEvent.fireEvent(timer, new ModuleEvent(this, ModuleEvent.STRIKE));
       light.setFill(Color.RED);
       timeline.play();
     }
@@ -68,7 +68,7 @@ public abstract class ModuleBase extends Region {
 
   protected final void submitSolved(boolean correct) { //FIXME this method is sus...
     if (!correct) {
-      BombEvent.fireEvent(timer, new BombEvent(BombEvent.STRIKE));
+      ModuleEvent.fireEvent(timer, new ModuleEvent(this, ModuleEvent.STRIKE));
     }
   }
 

@@ -52,7 +52,7 @@ public class Timer extends BorderPane {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        addEventHandler(BombEvent.STRIKE, e -> addStrike());
+        addEventHandler(ModuleEvent.STRIKE, e -> addStrike());
         addEventHandler(BombEvent.PAUSE, e -> timeline.pause());
         addEventHandler(BombEvent.PLAY, e -> timeline.play());
     }
