@@ -6,7 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class StoryMode {
+public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> requiredModules, List<Pool> pools) {
+    public Bomb initialize() {
+        List<Class<? extends ModuleBase>> moduleList = new ArrayList<>(pools.size());
+        moduleList.addAll(requiredModules);
+        for (Pool pool : pools) {
+            moduleList.addAll(pool.getModuleList());
+        }
+        return new Bomb(startTimeSecs, maxStrikes, moduleList);
+    }
+
     private record Pool(int poolCount, List<Class<? extends ModuleBase>> modulePool) {
         private static final Random rand = new Random();
 
@@ -16,17 +25,6 @@ public class StoryMode {
                 moduleList.add(modulePool.get(rand.nextInt(modulePool.size())));
             }
             return moduleList;
-        }
-    }
-
-    public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> requiredModules, List<Pool> pools) {
-        public Bomb initialize() {
-            List<Class<? extends ModuleBase>> moduleList = new ArrayList<>(pools.size());
-            moduleList.addAll(requiredModules);
-            for (Pool pool : pools) {
-                moduleList.addAll(pool.getModuleList());
-            }
-            return new Bomb(startTimeSecs, maxStrikes, moduleList);
         }
     }
 

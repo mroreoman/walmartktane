@@ -19,8 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import main.StoryMode.StoryModeBomb;
-
 public class KTANE extends Application {
   private static final List<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;
@@ -175,8 +173,8 @@ public class KTANE extends Application {
     chapterButtons.setMinHeight(235);
     chapterButtons.setMaxHeight(235);
     chapterButtons.setAlignment(Pos.CENTER);
-    for (StoryModeBomb storyModeBomb : StoryMode.ALL_CHAPTERS.get(chapterNum)) {
-      chapterButtons.getChildren().add(createStoryModeButton(storyModeBomb));
+    for (StoryModeBomb bomb : StoryModeBomb.ALL_CHAPTERS.get(chapterNum)) {
+      chapterButtons.getChildren().add(createStoryModeButton(bomb));
     }
 
     prevChapter = new Button("Previous");
@@ -207,18 +205,18 @@ public class KTANE extends Application {
     chapterTitle.setText("Chapter " + (chapterNum+1));
 
     chapterButtons.getChildren().clear();
-    for (StoryModeBomb storyModeBomb : StoryMode.ALL_CHAPTERS.get(chapterNum)) {
-      chapterButtons.getChildren().add(createStoryModeButton(storyModeBomb));
+    for (StoryModeBomb bomb : StoryModeBomb.ALL_CHAPTERS.get(chapterNum)) {
+      chapterButtons.getChildren().add(createStoryModeButton(bomb));
     }
 
     prevChapter.setDisable(chapterNum == 0);
-    nextChapter.setDisable(chapterNum == StoryMode.ALL_CHAPTERS.size() - 1);
+    nextChapter.setDisable(chapterNum == StoryModeBomb.ALL_CHAPTERS.size() - 1);
   }
 
-  private static Button createStoryModeButton(StoryMode.StoryModeBomb storyModeBomb) {
-    Button button = new Button(storyModeBomb.name());
+  private static Button createStoryModeButton(StoryModeBomb bomb) {
+    Button button = new Button(bomb.name());
     button.setOnAction(event -> {
-      bombs.add(storyModeBomb.initialize());
+      bombs.add(bomb.initialize());
       stage.setScene(bombs.getLast());
       bombs.getLast().play();
     });
