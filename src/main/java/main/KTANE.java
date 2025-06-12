@@ -19,6 +19,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+// splitting this up into MVC
+// MODEL: KtaneModel.java, contains Properties to store Ktane's state
+// VIEW: only contains GUI elements which update based on changes in MODEL
+  // classes that extend Builder<Region> to enforce "set it and forget it" mentality with views
+  // KtaneWrapper shows MainMenu, StoryMode, BombCreation, or current bomb
+// CONTROLLER: KtaneController.java, handles logic/updates MODEL
 public class KTANE extends Application {
   private static final List<Bomb> bombs = new ArrayList<>();
   private static VBox bombButtons;

@@ -16,12 +16,17 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
 import main.modules.*;
 import main.widgets.Edgework;
 
+//TODO not going to split bomb into MVC yet, just restructure to have all three components available to other classes
+//  - stop extending scene
+//  - make state field observable so bomb buttons can respond to changes
+//  -
 public class Bomb extends Scene {
   public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
@@ -68,6 +73,10 @@ public class Bomb extends Scene {
     });
 
     state = State.RUNNING;
+  }
+
+  public Region getView() {
+    return root;
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -146,20 +155,21 @@ public class Bomb extends Scene {
   }
 
   /**called to stop bomb prematurely (should only be when application is closed)*/
+  //TODO check if we need this
   public void stop() {
     System.out.println("Bomb.stop() called");
     BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
   }
 
   /**called when exiting bomb from exit button*/
-  private void exit() {
+  public void exit() {
     if (state == State.RUNNING) {
       BombEvent.fireEvent(timer, new BombEvent(BombEvent.EXPLODE));
     }
-    KTANE.openMenu();
+    KTANE.openMenu(); //TODO remove this
   }
   
-  public void checkDefused(ModuleBase currentModule) {
+  private void checkDefused(ModuleBase currentModule) {
     modules.get(currentModule).setText(currentModule.toString());
     boolean defused = true;
     for (ModuleBase module : modules.keySet()) {
@@ -170,7 +180,7 @@ public class Bomb extends Scene {
     }
   }
 
-  public void setCurrentModule(ModuleBase module) {
+  private void setCurrentModule(ModuleBase module) {
     currentModule.getChildren().clear();
     currentModule.getChildren().add(module);
   }
