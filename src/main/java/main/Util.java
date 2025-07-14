@@ -6,10 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -18,6 +14,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.CornerRadii;
 import javafx.geometry.Insets;
+import javafx.util.converter.NumberStringConverter;
 
 public final class Util {
     private final static Random rand = new Random();
@@ -91,33 +88,7 @@ public final class Util {
         return new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, new CornerRadii(3), new BorderWidths(2), new Insets(-2)));
     }
 
-    public static void setupIntField(TextField tf) {
-        tf.setTextFormatter(new TextFormatter<>(new PositiveIntegerStringConverter()));
-        tf.textProperty().addListener((obs, oldVal, newVal) -> {
-            try {
-                tf.getTextFormatter().getValueConverter().fromString(newVal);
-                tf.setBorder(null);
-            } catch (NumberFormatException e) {
-                tf.setBorder(goodBorder(Color.RED));
-            }
-        });
-    }
-
-    //adds a PISC formatter to tf with max val & makes it have a border if invalid
-    public static void setupIntField(TextField tf, int max) {
-        tf.setTextFormatter(new TextFormatter<>(new PositiveIntegerStringConverter(max)));
-        tf.textProperty().addListener((obs, oldVal, newVal) -> {
-            try {
-                tf.getTextFormatter().getValueConverter().fromString(newVal);
-                tf.setBorder(null);
-            } catch (NumberFormatException e) {
-                tf.setBorder(goodBorder(Color.RED));
-            }
-        });
-    }
-
-    static class PositiveIntegerStringConverter extends StringConverter<Integer> {
-        static IntegerStringConverter conv = new IntegerStringConverter();
+    public static class PositiveIntegerStringConverter extends NumberStringConverter {
         Integer max;
 
         public PositiveIntegerStringConverter() {
@@ -128,21 +99,17 @@ public final class Util {
         }
 
         public Integer fromString(String value) {
-            Integer newVal = conv.fromString(value);
+            Number newVal = super.fromString(value);
             if (newVal == null) {
                 return null;
             }
-            if (newVal <= 0) {
+            if (newVal.intValue() <= 0) {
                 throw new NumberFormatException("Value must be positive");
             }
-            if (max != null && newVal > max) {
+            if (max != null && newVal.intValue() > max) {
                 throw new NumberFormatException("Value exceeds max of " + max);
             }
-            return newVal;
-        }
-
-        public String toString(Integer value) {
-            return conv.toString(value);
+            return newVal.intValue();
         }
     }
 

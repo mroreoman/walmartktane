@@ -3,4 +3,5 @@ module main {
     exports main;
     exports main.modules;
     exports main.widgets;
+    exports main.menus;
 }

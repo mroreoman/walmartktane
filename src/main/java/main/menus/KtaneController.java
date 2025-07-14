@@ -1,14 +1,15 @@
-package main;
+package main.menus;
 
 import javafx.scene.layout.Region;
+import main.Bomb;
 
 public class KtaneController {
     private final KtaneModel model;
-    private final KtaneWrapperBuilder viewBuilder;
+    private final KtaneBuilder viewBuilder;
 
     public KtaneController() {
         model = new KtaneModel();
-        viewBuilder = new KtaneWrapperBuilder(model, this::quickPlay);
+        viewBuilder = new KtaneBuilder(model, this::newBomb);
 
         model.currentBomb().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
@@ -31,9 +32,8 @@ public class KtaneController {
         //  - would also need to load bomb history & story mode progress somewhere
     }
 
-    private void quickPlay() {
-        Bomb b = new Bomb(5, 300, 3);
-        model.addBomb(b);
+    private void newBomb(Bomb b) {
+//        model.addBomb(b);
         model.setCurrentBomb(b);
     }
 }

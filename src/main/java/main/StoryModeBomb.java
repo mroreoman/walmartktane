@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Random;
 
 public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> requiredModules, List<Pool> pools) {
-    public Bomb initialize() {
+    public Bomb initialize(Runnable bombExitAction) {
         List<Class<? extends ModuleBase>> moduleList = new ArrayList<>(pools.size());
         moduleList.addAll(requiredModules);
         for (Pool pool : pools) {
             moduleList.addAll(pool.getModuleList());
         }
-        return new Bomb(startTimeSecs, maxStrikes, moduleList);
+        return new Bomb(startTimeSecs, maxStrikes, moduleList, bombExitAction);
     }
 
     private record Pool(int poolCount, List<Class<? extends ModuleBase>> modulePool) {

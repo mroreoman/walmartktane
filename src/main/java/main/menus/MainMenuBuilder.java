@@ -1,4 +1,4 @@
-package main;
+package main.menus;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -12,18 +12,24 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
+import main.Bomb;
+import main.Util;
+
+import java.util.function.Consumer;
 
 public class MainMenuBuilder implements Builder<Region> {
     private final KtaneModel model;
+    private final Runnable setViewMainMenu;
     private final Runnable setViewStoryMode;
     private final Runnable setViewBombCreation;
-    private final Runnable quickPlayAction;
+    private final Consumer<Bomb> newBomb;
 
-    public MainMenuBuilder(KtaneModel model, Runnable setViewStoryMode, Runnable setViewBombCreation, Runnable quickPlayAction) {
+    public MainMenuBuilder(KtaneModel model, Runnable setViewMainMenu, Runnable setViewStoryMode, Runnable setViewBombCreation, Consumer<Bomb> newBomb) {
         this.model = model;
+        this.setViewMainMenu = setViewMainMenu;
         this.setViewStoryMode = setViewStoryMode;
         this.setViewBombCreation = setViewBombCreation;
-        this.quickPlayAction = quickPlayAction;
+        this.newBomb = newBomb;
     }
 
     public Region build() {
@@ -54,7 +60,7 @@ public class MainMenuBuilder implements Builder<Region> {
 
         Button quickPlayButton = new Button("Quick play");
         quickPlayButton.setFont(Util.bodyFont(25));
-        quickPlayButton.setOnAction(e -> quickPlayAction.run());
+        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(5, 300, 3, setViewMainMenu)));
 
         Button exit = new Button ("Exit");
         exit.setFont(Util.bodyFont(25));
@@ -65,7 +71,7 @@ public class MainMenuBuilder implements Builder<Region> {
 
     private Node createBombScroll() {
         VBox bombButtons = new VBox(10);
-        model.getBombs().addListener((ListChangeListener<Bomb>) change -> {
+        model.bombsProperty().addListener((ListChangeListener<Bomb>) change -> {
             bombButtons.getChildren().clear();
             for (Bomb bomb : change.getList()) {
                 bombButtons.getChildren().add(createBombButton(bomb));

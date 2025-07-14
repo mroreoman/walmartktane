@@ -39,32 +39,34 @@ public class Bomb extends Scene {
   private final Map<ModuleBase, Button> modules;
   private State state;
   private Pane currentModule;
+  private final Runnable setViewMainMenu;
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes) {
-    this(numModules, startTimeSecs, maxStrikes, allModules);
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable setViewMainMenu) {
+    this(numModules, startTimeSecs, maxStrikes, allModules, setViewMainMenu);
   }
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules) {
-    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules));
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable setViewMainMenu) {
+    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), setViewMainMenu);
   }
 
   /**
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList) {
+  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable setViewMainMenu) {
     super(new GridPane());
     root = (GridPane)getRoot();
     edgework = new Edgework();
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
+    this.setViewMainMenu = setViewMainMenu;
     initModules(moduleList);
     initGUI();
 
     addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
     addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
     addEventHandler(BombEvent.EXPLODE, e -> {
-      modules.keySet().forEach(module -> module.setDisable(true));
+      modules.keySet().forEach(module -> module.setDisable(true)); //FIXME not working?
       state = State.EXPLODED;
     });
     addEventHandler(BombEvent.DEFUSE, e -> {
@@ -116,7 +118,7 @@ public class Bomb extends Scene {
     moduleButtonsScroll.setPrefHeight(50);
 
     Button exitButton = new Button("exit");
-    exitButton.setOnAction(event -> exit());
+    exitButton.setOnAction(event -> setViewMainMenu.run());
 
     root.add(timer, 0, 0);
     GridPane.setHalignment(timer, HPos.LEFT);
@@ -154,8 +156,8 @@ public class Bomb extends Scene {
     }
   }
 
-  /**called to stop bomb prematurely (should only be when application is closed)*/
   //TODO check if we need this
+  /**called to stop bomb prematurely (should only be when application is closed)*/
   public void stop() {
     System.out.println("Bomb.stop() called");
     BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
@@ -166,7 +168,7 @@ public class Bomb extends Scene {
     if (state == State.RUNNING) {
       BombEvent.fireEvent(timer, new BombEvent(BombEvent.EXPLODE));
     }
-    KTANE.openMenu(); //TODO remove this
+    setViewMainMenu.run();
   }
   
   private void checkDefused(ModuleBase currentModule) {
