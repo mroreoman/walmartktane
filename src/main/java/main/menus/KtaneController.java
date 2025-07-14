@@ -12,13 +12,8 @@ public class KtaneController {
         viewBuilder = new KtaneBuilder(model, this::newBomb);
 
         model.currentBomb().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != newValue) {
-                if (oldValue != null) {
-                    oldValue.exit();
-                }
-                if (newValue != null) {
-                    newValue.play();
-                }
+            if (newValue != null) {
+                newValue.play();
             }
         });
     }
@@ -29,7 +24,7 @@ public class KtaneController {
 
     public void saveData() {
         //TODO save bomb history & story mode progress
-        //  - would also need to load bomb history & story mode progress somewhere
+        //  - would also need to load data somewhere
     }
 
     private void newBomb(Bomb b) {

@@ -1,17 +1,14 @@
 package main;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -24,16 +21,13 @@ import main.modules.*;
 import main.widgets.Edgework;
 
 //TODO not going to split bomb into MVC yet, just restructure to have all three components available to other classes
-//  - stop extending scene
 //  - make state field observable so bomb buttons can respond to changes
-//  -
-public class Bomb extends Scene {
+public class Bomb extends GridPane {
   public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
   private static final Random rand = new Random();
   public enum State { RUNNING, EXPLODED, DEFUSED }
 
-  private final GridPane root;
   private final Edgework edgework;
   private final Timer timer;
   private final Map<ModuleBase, Button> modules;
@@ -54,8 +48,6 @@ public class Bomb extends Scene {
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
   public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable setViewMainMenu) {
-    super(new GridPane());
-    root = (GridPane)getRoot();
     edgework = new Edgework();
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
@@ -66,8 +58,12 @@ public class Bomb extends Scene {
     addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
     addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
     addEventHandler(BombEvent.EXPLODE, e -> {
-      modules.keySet().forEach(module -> module.setDisable(true)); //FIXME not working?
+      modules.keySet().forEach(module -> module.setDisable(true));
       state = State.EXPLODED;
+      ImageView boom = new ImageView(new Image(Objects.requireNonNull(Bomb.class.getResourceAsStream("boom.png"))));
+      boom.setFitHeight(100);
+      boom.setFitWidth(100);
+      add(boom, 2, 1);
     });
     addEventHandler(BombEvent.DEFUSE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
@@ -78,7 +74,7 @@ public class Bomb extends Scene {
   }
 
   public Region getView() {
-    return root;
+    return this;
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -118,20 +114,20 @@ public class Bomb extends Scene {
     moduleButtonsScroll.setPrefHeight(50);
 
     Button exitButton = new Button("exit");
-    exitButton.setOnAction(event -> setViewMainMenu.run());
+    exitButton.setOnAction(event -> exit());
 
-    root.add(timer, 0, 0);
+    add(timer, 0, 0);
     GridPane.setHalignment(timer, HPos.LEFT);
     GridPane.setValignment(timer, VPos.TOP);
-    root.add(edgework, 1, 0);
-    root.add(exitButton, 2, 0);
+    add(edgework, 1, 0);
+    add(exitButton, 2, 0);
     GridPane.setHalignment(exitButton, HPos.RIGHT);
     GridPane.setValignment(exitButton, VPos.TOP);
-    root.add(moduleButtonsScroll, 0, 1);
-    root.add(currentModule, 1, 1, 2, 1);
+    add(moduleButtonsScroll, 0, 1);
+    add(currentModule, 1, 1);
 
-    root.setHgap(10);
-    root.setVgap(10);
+    setHgap(10);
+    setVgap(10);
 
     ColumnConstraints col1 = new ColumnConstraints();
     col1.setPercentWidth(25);
@@ -139,12 +135,12 @@ public class Bomb extends Scene {
     col2.setPercentWidth(50);
     ColumnConstraints col3 = new ColumnConstraints();
     col3.setPercentWidth(25);
-    root.getColumnConstraints().addAll(col1, col2, col3);
+    getColumnConstraints().addAll(col1, col2, col3);
 
     RowConstraints row1 = new RowConstraints();
     RowConstraints row2 = new RowConstraints();
     row2.setVgrow(Priority.ALWAYS);
-    root.getRowConstraints().addAll(row1, row2);
+    getRowConstraints().addAll(row1, row2);
   }
 
   public void play() {
@@ -154,13 +150,6 @@ public class Bomb extends Scene {
         module.play();
       }
     }
-  }
-
-  //TODO check if we need this
-  /**called to stop bomb prematurely (should only be when application is closed)*/
-  public void stop() {
-    System.out.println("Bomb.stop() called");
-    BombEvent.fireEvent(timer, new BombEvent(BombEvent.PAUSE));
   }
 
   /**called when exiting bomb from exit button*/
