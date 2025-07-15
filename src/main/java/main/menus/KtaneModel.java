@@ -1,12 +1,11 @@
 package main.menus;
 
-
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import main.Bomb;
 
-//TODO check if any other properties are needed
 public class KtaneModel {
-    private final ListProperty<Bomb> bombs = new SimpleListProperty<>();
+    private final ListProperty<Bomb> bombHistory = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<Bomb> currentBomb = new SimpleObjectProperty<>();
     private final IntegerProperty menuPage = new SimpleIntegerProperty(0);
     private final IntegerProperty storyModeChapter = new SimpleIntegerProperty(0);
@@ -14,16 +13,14 @@ public class KtaneModel {
     private final IntegerProperty bombCreationTime = new SimpleIntegerProperty();
     private final IntegerProperty bombCreationStrikes = new SimpleIntegerProperty();
 
-    public ListProperty<Bomb> bombsProperty() {
-        return bombs;
+    public ListProperty<Bomb> bombHistoryProperty() {
+        return bombHistory;
     }
 
-    //TODO fix bomb history (bombs.addList gives error)
     public void addBomb(Bomb bomb) {
-        bombs.addLast(bomb);
+        bombHistory.add(bomb);
     }
 
-    //TODO add listener in KtaneController to play/pause the bomb
     public ObjectProperty<Bomb> currentBomb() {
         return currentBomb;
     }

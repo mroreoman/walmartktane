@@ -7,7 +7,6 @@ import main.Bomb;
 
 import java.util.function.Consumer;
 
-//TODO combine KtaneView and MainMenuView?
 public class KtaneBuilder implements Builder<Region> {
     private final KtaneModel model;
     private final Consumer<Bomb> newBomb;
@@ -20,23 +19,30 @@ public class KtaneBuilder implements Builder<Region> {
     @Override
     public Region build() {
         StackPane root = new StackPane();
-        Region mainMenu;
+
+        Runnable bombExitAction = () -> {
+            model.setCurrentBomb(null);
+            model.menuPageProperty().set(0);
+        };
+
         Region storyMode = new StoryModeBuilder(
                 model,
                 newBomb,
-                () -> model.menuPageProperty().set(0)
+                () -> model.menuPageProperty().set(0),
+                bombExitAction
         ).build();
         Region bombCreation = new BombCreationBuilder(
                 model,
                 newBomb,
-                () -> model.menuPageProperty().set(0)
-        ).build();
-        mainMenu = new MainMenuBuilder(
-                model,
                 () -> model.menuPageProperty().set(0),
+                bombExitAction
+        ).build();
+        Region mainMenu = new MainMenuBuilder(
+                model,
                 () -> model.menuPageProperty().set(1),
                 () -> model.menuPageProperty().set(2),
-                newBomb
+                newBomb,
+                bombExitAction
         ).build();
         root.getChildren().add(mainMenu);
 

@@ -19,11 +19,13 @@ public class StoryModeBuilder implements Builder<Region> {
     private final KtaneModel model;
     private final Consumer<Bomb> newBomb;
     private final Runnable setViewMainMenu;
+    private final Runnable bombExitAction;
 
-    public StoryModeBuilder(KtaneModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu) {
+    public StoryModeBuilder(KtaneModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu, Runnable bombExitAction) {
         this.model = model;
         this.newBomb = newBomb;
         this.setViewMainMenu = setViewMainMenu;
+        this.bombExitAction = bombExitAction;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class StoryModeBuilder implements Builder<Region> {
 
     private Button createStoryModeButton(StoryModeBomb bomb) {
         Button button = new Button(bomb.name());
-        button.setOnAction(event -> newBomb.accept(bomb.initialize(setViewMainMenu)));
+        button.setOnAction(event -> newBomb.accept(bomb.initialize(bombExitAction)));
         return button;
     }
     

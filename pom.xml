@@ -30,7 +30,7 @@
                     <launcher>walmartktane</launcher>
                     <jlinkImageName>walmartktane</jlinkImageName>
                     <jlinkZipName>walmartktane</jlinkZipName>
-                    <mainClass>main/main.KTANE</mainClass>
+                    <mainClass>main/main.menus.KTANE</mainClass>
                 </configuration>
             </plugin>
         </plugins>

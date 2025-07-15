@@ -21,11 +21,13 @@ public class BombCreationBuilder implements Builder<Region> {
     private final KtaneModel model;
     private final Consumer<Bomb> newBomb;
     private final Runnable setViewMainMenu;
+    private final Runnable bombExitAction;
 
-    public BombCreationBuilder(KtaneModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu) {
+    public BombCreationBuilder(KtaneModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu, Runnable bombExitAction) {
         this.model = model;
         this.newBomb = newBomb;
         this.setViewMainMenu = setViewMainMenu;
+        this.bombExitAction = bombExitAction;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class BombCreationBuilder implements Builder<Region> {
                         model.getBombCreationAmount(),
                         model.getBombCreationTime(),
                         model.getBombCreationStrikes(),
-                        setViewMainMenu
+                        bombExitAction
                 );
                 newBomb.accept(b);
             } catch (NumberFormatException e) { System.out.println("Invalid input"); }

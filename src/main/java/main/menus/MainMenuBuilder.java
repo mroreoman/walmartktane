@@ -19,17 +19,17 @@ import java.util.function.Consumer;
 
 public class MainMenuBuilder implements Builder<Region> {
     private final KtaneModel model;
-    private final Runnable setViewMainMenu;
     private final Runnable setViewStoryMode;
     private final Runnable setViewBombCreation;
     private final Consumer<Bomb> newBomb;
+    private final Runnable bombExitAction;
 
-    public MainMenuBuilder(KtaneModel model, Runnable setViewMainMenu, Runnable setViewStoryMode, Runnable setViewBombCreation, Consumer<Bomb> newBomb) {
+    public MainMenuBuilder(KtaneModel model, Runnable setViewStoryMode, Runnable setViewBombCreation, Consumer<Bomb> newBomb, Runnable bombExitAction) {
         this.model = model;
-        this.setViewMainMenu = setViewMainMenu;
         this.setViewStoryMode = setViewStoryMode;
         this.setViewBombCreation = setViewBombCreation;
         this.newBomb = newBomb;
+        this.bombExitAction = bombExitAction;
     }
 
     public Region build() {
@@ -60,7 +60,7 @@ public class MainMenuBuilder implements Builder<Region> {
 
         Button quickPlayButton = new Button("Quick play");
         quickPlayButton.setFont(Util.bodyFont(25));
-        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(5, 300, 3, setViewMainMenu)));
+        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(5, 300, 3, bombExitAction)));
 
         Button exit = new Button ("Exit");
         exit.setFont(Util.bodyFont(25));
@@ -71,7 +71,7 @@ public class MainMenuBuilder implements Builder<Region> {
 
     private Node createBombScroll() {
         VBox bombButtons = new VBox(10);
-        model.bombsProperty().addListener((ListChangeListener<Bomb>) change -> {
+        model.bombHistoryProperty().addListener((ListChangeListener<Bomb>) change -> {
             bombButtons.getChildren().clear();
             for (Bomb bomb : change.getList()) {
                 bombButtons.getChildren().add(createBombButton(bomb));

@@ -15,6 +15,11 @@ public class KtaneController {
             if (newValue != null) {
                 newValue.play();
             }
+
+            System.out.println(oldValue);
+            if (oldValue != null && oldValue.getState() != Bomb.State.RUNNING) {
+                model.addBomb(oldValue);
+            }
         });
     }
 

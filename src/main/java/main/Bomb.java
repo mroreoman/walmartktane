@@ -33,25 +33,25 @@ public class Bomb extends GridPane {
   private final Map<ModuleBase, Button> modules;
   private State state;
   private Pane currentModule;
-  private final Runnable setViewMainMenu;
+  private final Runnable bombExitAction;
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable setViewMainMenu) {
-    this(numModules, startTimeSecs, maxStrikes, allModules, setViewMainMenu);
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction) {
+    this(numModules, startTimeSecs, maxStrikes, allModules, bombExitAction);
   }
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable setViewMainMenu) {
-    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), setViewMainMenu);
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction) {
+    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), bombExitAction);
   }
 
   /**
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable setViewMainMenu) {
+  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction) {
     edgework = new Edgework();
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
-    this.setViewMainMenu = setViewMainMenu;
+    this.bombExitAction = bombExitAction;
     initModules(moduleList);
     initGUI();
 
@@ -157,7 +157,7 @@ public class Bomb extends GridPane {
     if (state == State.RUNNING) {
       BombEvent.fireEvent(timer, new BombEvent(BombEvent.EXPLODE));
     }
-    setViewMainMenu.run();
+    bombExitAction.run();
   }
   
   private void checkDefused(ModuleBase currentModule) {
@@ -174,6 +174,10 @@ public class Bomb extends GridPane {
   private void setCurrentModule(ModuleBase module) {
     currentModule.getChildren().clear();
     currentModule.getChildren().add(module);
+  }
+
+  public State getState() {
+    return state;
   }
 
   public Edgework getEdgework() {
