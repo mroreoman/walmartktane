@@ -25,9 +25,10 @@ import main.widgets.Edgework;
 public class Bomb extends GridPane {
   public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
-  private static final Random rand = new Random();
+//  private static final Random rand = new Random();
   public enum State { RUNNING, EXPLODED, DEFUSED }
 
+  private final Random rand;
   private final Edgework edgework;
   private final Timer timer;
   private final Map<ModuleBase, Button> modules;
@@ -35,20 +36,21 @@ public class Bomb extends GridPane {
   private Pane currentModule;
   private final Runnable bombExitAction;
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction) {
-    this(numModules, startTimeSecs, maxStrikes, allModules, bombExitAction);
+  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction) {
+    this(rand, numModules, startTimeSecs, maxStrikes, allModules, bombExitAction);
   }
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction) {
-    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), bombExitAction);
+  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction) {
+    this(rand, startTimeSecs, maxStrikes, generateModuleList(rand, numModules, availableModules), bombExitAction);
   }
 
   /**
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction) {
-    edgework = new Edgework();
+  public Bomb(Random rand, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction) {
+    this.rand = rand;
+    edgework = new Edgework(rand);
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
     this.bombExitAction = bombExitAction;
@@ -77,7 +79,7 @@ public class Bomb extends GridPane {
     return this;
   }
 
-  private static List<Class<? extends ModuleBase>> generateModuleList(int numModules, List<Class<? extends ModuleBase>> availableModules) {
+  private static List<Class<? extends ModuleBase>> generateModuleList(Random rand, int numModules, List<Class<? extends ModuleBase>> availableModules) {
     List<Class<? extends ModuleBase>> moduleList = new ArrayList<>();
     for (int i = 0; i < numModules; i++) {
       moduleList.add(availableModules.get(rand.nextInt(availableModules.size())));
@@ -178,6 +180,10 @@ public class Bomb extends GridPane {
 
   public State getState() {
     return state;
+  }
+
+  public Random getRandom() {
+    return rand;
   }
 
   public Edgework getEdgework() {
