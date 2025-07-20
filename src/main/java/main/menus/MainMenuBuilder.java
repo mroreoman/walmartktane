@@ -60,7 +60,7 @@ public class MainMenuBuilder implements Builder<Region> {
 
         Button quickPlayButton = new Button("Quick play");
         quickPlayButton.setFont(Util.bodyFont(25));
-        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(5, 300, 3, bombExitAction)));
+        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(5, 300, 3, bombExitAction, "Quick Play")));
 
         Button exit = new Button ("Exit");
         exit.setFont(Util.bodyFont(25));

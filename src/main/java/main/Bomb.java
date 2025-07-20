@@ -34,24 +34,26 @@ public class Bomb extends GridPane {
   private State state;
   private Pane currentModule;
   private final Runnable bombExitAction;
+  private final String name;
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction) {
-    this(numModules, startTimeSecs, maxStrikes, allModules, bombExitAction);
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction, String name) {
+    this(numModules, startTimeSecs, maxStrikes, allModules, bombExitAction, name);
   }
 
-  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction) {
-    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), bombExitAction);
+  public Bomb(int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction, String name) {
+    this(startTimeSecs, maxStrikes, generateModuleList(numModules, availableModules), bombExitAction, name);
   }
 
   /**
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction) {
+  public Bomb(int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction, String name) {
     edgework = new Edgework();
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
     this.bombExitAction = bombExitAction;
+    this.name = name;
     initModules(moduleList);
     initGUI();
 
@@ -189,7 +191,7 @@ public class Bomb extends GridPane {
   }
 
   public String toString() {
-    return "Bomb" + (state != State.RUNNING ? " - " + state : "");
+    return name + (state != State.RUNNING ? " - " + state : "");
   }
   
 }

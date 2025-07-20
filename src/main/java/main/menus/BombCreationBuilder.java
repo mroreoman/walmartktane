@@ -103,7 +103,8 @@ public class BombCreationBuilder implements Builder<Region> {
                         model.getBombCreationAmount(),
                         model.getBombCreationTime(),
                         model.getBombCreationStrikes(),
-                        bombExitAction
+                        bombExitAction,
+                        "Custom"
                 );
                 newBomb.accept(b);
             } catch (NumberFormatException e) { System.out.println("Invalid input"); }

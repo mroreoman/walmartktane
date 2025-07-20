@@ -13,7 +13,7 @@ public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List
         for (Pool pool : pools) {
             moduleList.addAll(pool.getModuleList());
         }
-        return new Bomb(startTimeSecs, maxStrikes, moduleList, bombExitAction);
+        return new Bomb(startTimeSecs, maxStrikes, moduleList, bombExitAction, name);
     }
 
     private record Pool(int poolCount, List<Class<? extends ModuleBase>> modulePool) {
