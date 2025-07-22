@@ -22,12 +22,13 @@ import main.widgets.Edgework;
 
 //TODO not going to split bomb into MVC yet, just restructure to have all three components available to other classes
 //  - make state field observable so bomb buttons can respond to changes
-public class Bomb extends GridPane {
+public class Bomb {
   public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
 
 //  private static final Random rand = new Random();
   public enum State { RUNNING, EXPLODED, DEFUSED }
 
+  private final GridPane root;
   private final Random rand;
   private final Edgework edgework;
   private final Timer timer;
@@ -35,39 +36,42 @@ public class Bomb extends GridPane {
   private State state;
   private Pane currentModule;
   private final Runnable bombExitAction;
+  private final String name;
 
-  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction) {
-    this(rand, numModules, startTimeSecs, maxStrikes, allModules, bombExitAction);
+  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction, String name) {
+    this(rand, numModules, startTimeSecs, maxStrikes, allModules, bombExitAction, name);
   }
 
-  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction) {
-    this(rand, startTimeSecs, maxStrikes, generateModuleList(rand, numModules, availableModules), bombExitAction);
+  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction, String name) {
+    this(rand, startTimeSecs, maxStrikes, generateModuleList(rand, numModules, availableModules), bombExitAction, name);
   }
 
   /**
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(Random rand, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction) {
+  public Bomb(Random rand, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction, String name) {
+    root = new GridPane();
     this.rand = rand;
     edgework = new Edgework(rand);
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
     this.bombExitAction = bombExitAction;
+    this.name = name;
     initModules(moduleList);
     initGUI();
 
-    addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
-    addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
-    addEventHandler(BombEvent.EXPLODE, e -> {
+    root.addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
+    root.addEventHandler(BombEvent.PAUSE, e -> modules.keySet().forEach(ModuleBase::pause));
+    root.addEventHandler(BombEvent.EXPLODE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
       state = State.EXPLODED;
       ImageView boom = new ImageView(new Image(Objects.requireNonNull(Bomb.class.getResourceAsStream("boom.png"))));
       boom.setFitHeight(100);
       boom.setFitWidth(100);
-      add(boom, 2, 1);
+      root.add(boom, 2, 1);
     });
-    addEventHandler(BombEvent.DEFUSE, e -> {
+    root.addEventHandler(BombEvent.DEFUSE, e -> {
       modules.keySet().forEach(module -> module.setDisable(true));
       state = State.DEFUSED;
     });
@@ -76,7 +80,7 @@ public class Bomb extends GridPane {
   }
 
   public Region getView() {
-    return this;
+    return root;
   }
 
   private static List<Class<? extends ModuleBase>> generateModuleList(Random rand, int numModules, List<Class<? extends ModuleBase>> availableModules) {
@@ -118,18 +122,18 @@ public class Bomb extends GridPane {
     Button exitButton = new Button("exit");
     exitButton.setOnAction(event -> exit());
 
-    add(timer, 0, 0);
+    root.add(timer, 0, 0);
     GridPane.setHalignment(timer, HPos.LEFT);
     GridPane.setValignment(timer, VPos.TOP);
-    add(edgework, 1, 0);
-    add(exitButton, 2, 0);
+    root.add(edgework, 1, 0);
+    root.add(exitButton, 2, 0);
     GridPane.setHalignment(exitButton, HPos.RIGHT);
     GridPane.setValignment(exitButton, VPos.TOP);
-    add(moduleButtonsScroll, 0, 1);
-    add(currentModule, 1, 1);
+    root.add(moduleButtonsScroll, 0, 1);
+    root.add(currentModule, 1, 1);
 
-    setHgap(10);
-    setVgap(10);
+    root.setHgap(10);
+    root.setVgap(10);
 
     ColumnConstraints col1 = new ColumnConstraints();
     col1.setPercentWidth(25);
@@ -137,12 +141,12 @@ public class Bomb extends GridPane {
     col2.setPercentWidth(50);
     ColumnConstraints col3 = new ColumnConstraints();
     col3.setPercentWidth(25);
-    getColumnConstraints().addAll(col1, col2, col3);
+    root.getColumnConstraints().addAll(col1, col2, col3);
 
     RowConstraints row1 = new RowConstraints();
     RowConstraints row2 = new RowConstraints();
     row2.setVgrow(Priority.ALWAYS);
-    getRowConstraints().addAll(row1, row2);
+    root.getRowConstraints().addAll(row1, row2);
   }
 
   public void play() {
@@ -195,7 +199,7 @@ public class Bomb extends GridPane {
   }
 
   public String toString() {
-    return "Bomb" + (state != State.RUNNING ? " - " + state : "");
+    return name + (state != State.RUNNING ? " - " + state : "");
   }
   
 }
