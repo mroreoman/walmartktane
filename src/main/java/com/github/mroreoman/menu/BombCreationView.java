@@ -1,13 +1,13 @@
 package com.github.mroreoman.menu;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.util.Builder;
 
 import com.github.mroreoman.game.Bomb;
+import com.github.mroreoman.game.modules.ModuleBase;
 import com.github.mroreoman.Util;
 
 public class BombCreationView implements Builder<Region> {
@@ -35,9 +36,11 @@ public class BombCreationView implements Builder<Region> {
     public Region build() {
         VBox box = new VBox(
                 createTitle(),
-                createAmountBox(),
                 createTimeBox(),
                 createStrikeBox(),
+                createModuleAmountBox(),
+                createModuleListBox(),
+                createSeedBox(),
                 createButtonBox()
         );
         box.setSpacing(25);
@@ -51,37 +54,65 @@ public class BombCreationView implements Builder<Region> {
         return title;
     }
 
-    private Node createAmountBox() {
-        Text text = new Text("How many modules?");
-        text.setFont(Util.titleFont(20));
-        TextField tf = createIntField();
-        tf.textProperty().bindBidirectional(model.bombCreationAmountProperty(), new Util.PositiveIntegerStringConverter());
-        HBox box = new HBox(10, text, tf);
-        box.setAlignment(Pos.CENTER);
-        return box;
-    }
-
     private Node createTimeBox() {
-        Text text = new Text("How much time?");
+        Text text = new Text("Time (seconds):");
         text.setFont(Util.titleFont(20));
-        TextField tf = createIntField();
-        tf.textProperty().bindBidirectional(model.bombCreationTimeProperty(), new Util.PositiveIntegerStringConverter());
+        TextField tf = createIntField(model.bombCreationTimeProperty());
         HBox box = new HBox(10, text, tf);
         box.setAlignment(Pos.CENTER);
         return box;
     }
 
     private Node createStrikeBox() {
-        Text text = new Text("How many strikes?");
+        Text text = new Text("Strikes:");
         text.setFont(Util.titleFont(20));
-        TextField tf = createIntField();
-        tf.textProperty().bindBidirectional(model.bombCreationStrikesProperty(), new Util.PositiveIntegerStringConverter());
+        TextField tf = createIntField(model.bombCreationStrikesProperty());
         HBox box = new HBox(10, text, tf);
         box.setAlignment(Pos.CENTER);
         return box;
     }
 
-    private TextField createIntField() {
+    private Node createModuleAmountBox() {
+        Text text = new Text("Number of modules:");
+        text.setFont(Util.titleFont(20));
+        TextField tf = createIntField(model.bombCreationAmountProperty());
+        HBox box = new HBox(10, text, tf);
+        box.setAlignment(Pos.CENTER);
+        return box;
+    }
+
+    private Node createModuleListBox() {
+        MenuButton menu = new MenuButton("Module List");
+        menu.setFont(Util.titleFont(20));
+        for (ModuleBase.Module module : ModuleBase.Module.values()) {
+            CheckBox cb = new CheckBox(module.toString());
+            cb.setFont(Util.bodyFont(15));
+            cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    model.bombCreationModuleListProperty().add(module);
+                } else {
+                    model.bombCreationModuleListProperty().remove(module);
+                }
+            });
+            CustomMenuItem item = new CustomMenuItem(cb);
+            item.setHideOnClick(false);
+            menu.getItems().add(item);
+        }
+        return menu;
+    }
+
+    private Node createSeedBox() {
+        CheckBox checkBox = new CheckBox("Custom seed:");
+        checkBox.setFont(Util.titleFont(20));
+        checkBox.selectedProperty().bindBidirectional(model.bombCreationSeededProperty());
+        TextField tf = createIntField(model.bombCreationSeedProperty());
+        tf.disableProperty().bind(checkBox.selectedProperty().not());
+        HBox box = new HBox(10, checkBox, tf);
+        box.setAlignment(Pos.CENTER);
+        return box;
+    }
+
+    private static TextField createIntField(IntegerProperty modelProperty) {
         TextField tf = new TextField();
         tf.setMaxWidth(400);
         tf.setTextFormatter(new TextFormatter<>(new Util.PositiveIntegerStringConverter()));
@@ -93,25 +124,24 @@ public class BombCreationView implements Builder<Region> {
                 tf.setBorder(Util.goodBorder(Color.RED));
             }
         });
+        tf.setFont(Util.bodyFont(15));
+        tf.textProperty().bindBidirectional(modelProperty, new Util.PositiveIntegerStringConverter());
         return tf;
     }
 
     private Node createButtonBox() {
         Button create = new Button("Create Bomb");
         create.setOnAction(event -> {
-            try {
-                Bomb b = new Bomb(
-                        new Random(),
-                        model.getBombCreationAmount(),
-                        model.getBombCreationTime(),
-                        model.getBombCreationStrikes(),
-                        bombExitAction,
-                        "Custom"
-                );
-                newBomb.accept(b);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input");
-            }
+            Bomb b = new Bomb(
+                    model.getBombCreationSeeded() ? new Random(model.getBombCreationSeed()) : new Random(),
+                    model.getBombCreationAmount(),
+                    model.getBombCreationTime(),
+                    model.getBombCreationStrikes(),
+                    model.getBombCreationModuleList().isEmpty() ? List.of(ModuleBase.Module.values()) : model.getBombCreationModuleList(),
+                    bombExitAction,
+                    "Custom"
+            );
+            newBomb.accept(b);
         });
         Button back = new Button("Back");
         back.setOnAction(event -> setViewMainMenu.run());

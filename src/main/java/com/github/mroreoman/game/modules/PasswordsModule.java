@@ -17,6 +17,7 @@ import javafx.scene.text.Text;
 import com.github.mroreoman.game.Bomb;
 
 public class PasswordsModule extends ModuleBase {
+    public static final String NAME = "Passwords";
     private final static String[] passwords = {"about", "after", "again", "below", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "plant", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "water", "where", "which", "world", "would", "write"};
     private final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
@@ -78,7 +79,7 @@ public class PasswordsModule extends ModuleBase {
     }
 
     public PasswordsModule(Bomb bomb, Random rand) {
-        super("Passwords", bomb);
+        super(NAME, bomb);
         do {
             initPasswords(rand);
         } while (!checkSolvable());

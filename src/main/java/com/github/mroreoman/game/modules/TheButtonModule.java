@@ -15,6 +15,7 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.Util;
 
 public class TheButtonModule extends ModuleBase {
+    public static final String NAME = "The Button";
     private static final String[] LABELS = {"Abort", "Detonate", "Hold", "Press"};
     private static final Color[] COLORS = {Color.BLUE, Color.RED, Color.WHITE, Color.YELLOW, Color.BLACK};
 
@@ -29,7 +30,7 @@ public class TheButtonModule extends ModuleBase {
     private Rectangle strip;
 
     public TheButtonModule(Bomb bomb, Random rand) {
-        super("The Button", bomb);
+        super(NAME, bomb);
         color = COLORS[rand.nextInt(5)];
         label = LABELS[rand.nextInt(4)];
         tapSolve = setSolution();

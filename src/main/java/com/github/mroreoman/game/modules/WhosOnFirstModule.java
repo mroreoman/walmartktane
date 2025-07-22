@@ -21,6 +21,7 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.Util;
 
 public class WhosOnFirstModule extends ModuleBase {
+    public static final String NAME = "Who's On First";
     private int stage = 0;
     private WOF[] wofs = new WOF[6];
     private Text displayLabel;
@@ -130,7 +131,7 @@ public class WhosOnFirstModule extends ModuleBase {
     }
 
     public WhosOnFirstModule(Bomb bomb, Random rand) {
-        super("Who's on First", bomb);
+        super(NAME, bomb);
         initWhosOnFirst(rand);
         initGUI();
     }

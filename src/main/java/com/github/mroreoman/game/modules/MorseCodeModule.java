@@ -23,6 +23,7 @@ import javafx.scene.text.Text;
 import com.github.mroreoman.game.Bomb;
 
 public class MorseCodeModule extends ModuleBase {
+    public static final String NAME = "Morse Code";
     private static final String[] words = {"shell", "halls", "slick", "trick", "boxes", "leaks", "strobe", "bistro", "flick", "bombs", "break", "brick", "steak", "sting", "vector", "beats"};
     private static final double[] frequencies = {3.505, 3.515, 3.522, 3.532, 3.535, 3.542, 3.545, 3.552, 3.555, 3.565, 3.572, 3.575, 3.582, 3.592, 3.595, 3.600};
 
@@ -115,7 +116,7 @@ public class MorseCodeModule extends ModuleBase {
     }
 
     public MorseCodeModule(Bomb bomb, Random rand) {
-        super("Morse Code", bomb);
+        super(NAME, bomb);
         int index = rand.nextInt(words.length);
         word = words[index];
         frequency = frequencies[index];

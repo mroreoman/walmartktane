@@ -19,6 +19,8 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.Util;
 
 public class MemoryModule extends ModuleBase {
+    public static final String NAME = "Memory";
+
     private String[] labels = new String[5];
     private int[] positions = new int[5];
     private int stage = 0;
@@ -75,7 +77,7 @@ public class MemoryModule extends ModuleBase {
     }
 
     public MemoryModule(Bomb bomb, Random rand) {
-        super("Memory", bomb);
+        super(NAME, bomb);
         initMemory(rand);
         initGUI();
     }

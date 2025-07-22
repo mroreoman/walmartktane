@@ -2,7 +2,6 @@ package com.github.mroreoman.game.modules;
 
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import java.lang.RuntimeException;
 
@@ -21,6 +20,7 @@ import com.github.mroreoman.Util;
 import com.github.mroreoman.game.Bomb;
 
 public class WiresModule extends ModuleBase {
+    public static final String NAME = "Wires";
     private static final Color[] COLORS = {Color.RED, Color.WHITE, Color.BLUE, Color.YELLOW, Color.BLACK};
 
     private final Wire[] wires = new Wire[6];
@@ -59,7 +59,7 @@ public class WiresModule extends ModuleBase {
     }
 
     public WiresModule(Bomb bomb, Random rand) {
-        super("Wires", bomb);
+        super(NAME, bomb);
         initWires(rand);
         setSolution();
         initGUI();

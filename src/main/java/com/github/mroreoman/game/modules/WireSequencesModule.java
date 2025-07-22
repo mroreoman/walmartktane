@@ -22,6 +22,7 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.Util;
 
 public class WireSequencesModule extends ModuleBase {
+    public static final String NAME = "Wire Sequences";
     private static final Color[] COLORS = {Color.RED, Color.BLUE, Color.BLACK};
 
     private int redCount = 0;
@@ -146,7 +147,7 @@ public class WireSequencesModule extends ModuleBase {
     }
 
     public WireSequencesModule(Bomb bomb, Random rand) {
-        super("Wire Sequences", bomb);
+        super(NAME, bomb);
         initWireSequences(rand);
         initGUI();
     }

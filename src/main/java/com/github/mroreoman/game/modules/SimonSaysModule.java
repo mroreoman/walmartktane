@@ -18,6 +18,7 @@ import javafx.scene.effect.Glow;
 import com.github.mroreoman.game.Bomb;
 
 public class SimonSaysModule extends ModuleBase {
+    public static final String NAME = "Simon Says";
     private static final Color[] COLORS = {Color.web("0x800000"), Color.web("0x000080"), Color.web("0x008000"), Color.web("0x808000")};
 
     private Color[] flashes;
@@ -86,7 +87,7 @@ public class SimonSaysModule extends ModuleBase {
     }
 
     public SimonSaysModule(Bomb bomb, Random rand) {
-        super("Simon Says", bomb);
+        super(NAME, bomb);
         initSimonSays(rand);
         initGUI();
     }

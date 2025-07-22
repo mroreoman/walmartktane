@@ -18,6 +18,7 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.Util;
 
 public class KeypadsModule extends ModuleBase {
+    public static final String NAME = "Keypads";
     private static final String[] COLUMN1 = {"keypad_symbols/28-balloon.png", "keypad_symbols/13-at.png", "keypad_symbols/30-upsidedowny.png", "keypad_symbols/12-squigglyn.png", "keypad_symbols/7-squidknife.png", "keypad_symbols/9-hookn.png", "keypad_symbols/23-leftc.png"};
     private static final String[] COLUMN2 = {"keypad_symbols/16-euro.png", "keypad_symbols/28-balloon.png", "keypad_symbols/23-leftc.png", "keypad_symbols/26-cursive.png", "keypad_symbols/3-hollowstar.png", "keypad_symbols/9-hookn.png", "keypad_symbols/20-questionmark.png"};
     private static final String[] COLUMN3 = {"keypad_symbols/1-copyright.png", "keypad_symbols/8-pumpkin.png", "keypad_symbols/26-cursive.png", "keypad_symbols/5-doublek.png", "keypad_symbols/15-meltedthree.png", "keypad_symbols/30-upsidedowny.png", "keypad_symbols/3-hollowstar.png"};
@@ -76,7 +77,7 @@ public class KeypadsModule extends ModuleBase {
     }
 
     public KeypadsModule(Bomb bomb, Random rand) {
-        super("Keypads", bomb);
+        super(NAME, bomb);
         initKeypads(rand);
         initGUI();
     }

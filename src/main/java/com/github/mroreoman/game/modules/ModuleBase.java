@@ -46,6 +46,22 @@ public abstract class ModuleBase extends Region {
                 case PASSWORDS -> new PasswordsModule(bomb, rand);
             };
         }
+
+        public String toString() {
+            return switch (this) {
+                case WIRES -> WiresModule.NAME;
+                case THE_BUTTON -> TheButtonModule.NAME;
+                case KEYPADS -> KeypadsModule.NAME;
+                case SIMON_SAYS -> SimonSaysModule.NAME;
+                case WHOS_ON_FIRST -> WhosOnFirstModule.NAME;
+                case MEMORY -> MemoryModule.NAME;
+                case MORSE_CODE -> MorseCodeModule.NAME;
+                case COMPLICATED_WIRES -> ComplicatedWiresModule.NAME;
+                case WIRE_SEQUENCES -> WireSequencesModule.NAME;
+                case MAZES -> MazesModule.NAME;
+                case PASSWORDS -> PasswordsModule.NAME;
+            };
+        }
     }
 
     private final static double MODULE_SIZE = 233;
