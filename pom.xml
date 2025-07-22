@@ -1,7 +1,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>main</groupId>
-    <artifactId>WalmartKTANE</artifactId>
+    <groupId>com.github.mroreoman</groupId>
+    <artifactId>walmartktane</artifactId>
     <version>0.2.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,10 +26,10 @@
 <!--                    <compress>2</compress>-->
 <!--                    <noHeaderFiles>true</noHeaderFiles>-->
 <!--                    <noManPages>true</noManPages>-->
-                    <launcher>WalmartKTANE</launcher>
-                    <jlinkImageName>WalmartKTANE</jlinkImageName>
-                    <jlinkZipName>WalmartKTANE</jlinkZipName>
-                    <mainClass>main/main.menus.KTANE</mainClass>
+                    <launcher>walmartktane</launcher>
+                    <jlinkImageName>walmartktane</jlinkImageName>
+                    <jlinkZipName>walmartktane</jlinkZipName>
+                    <mainClass>walmartktane/com.github.mroreoman.KTANE</mainClass>
                 </configuration>
             </plugin>
         </plugins>
