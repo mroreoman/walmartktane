@@ -6,8 +6,7 @@ public class SerialNumber implements Widget {
     private static final String CHARS = "0123456789ABCDEFGHIJKLMNPQRTSUVWXZ"; //no O or Y
     private String serial;
 
-    public SerialNumber() {
-        Random rand = new Random();
+    public SerialNumber(Random rand) {
         serial = "";
         serial += CHARS.charAt(rand.nextInt(34));
         serial += CHARS.charAt(rand.nextInt(34));

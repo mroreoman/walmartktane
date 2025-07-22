@@ -25,7 +25,7 @@ public class Edgework extends VBox {
     }
 
     private void initWidgets(Random rand, int numWidgets) {
-        serial = new SerialNumber();
+        serial = new SerialNumber(rand);
         batteryHolders = new ArrayList<>();
         indicators = new ArrayList<>();
         portPlates = new ArrayList<>();
