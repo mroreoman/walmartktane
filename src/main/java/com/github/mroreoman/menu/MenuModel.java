@@ -19,7 +19,8 @@ public class MenuModel {
     }
 
     public void addBomb(Bomb bomb) {
-        bombHistory.add(bomb);
+        if (!bombHistory.contains(bomb))
+            bombHistory.add(bomb);
     }
 
     public ObjectProperty<Bomb> currentBombProperty() {

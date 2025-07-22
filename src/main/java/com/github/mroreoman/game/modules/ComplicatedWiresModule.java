@@ -2,7 +2,6 @@ package com.github.mroreoman.game.modules;
 
 import java.util.Random;
 import java.util.Arrays;
-import java.util.ArrayList;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,6 +18,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
+import com.github.mroreoman.Util;
 import com.github.mroreoman.game.Bomb;
 
 public class ComplicatedWiresModule extends ModuleBase {
@@ -78,31 +78,21 @@ public class ComplicatedWiresModule extends ModuleBase {
     }
 
     private void initComplicatedWires(Random rand) {
-        ArrayList<Integer> positions = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5));
         int numWires = rand.nextInt(3) + 4;
-        int emptyWires = wires.length - numWires;
-        while (emptyWires-- > 0) {
-            positions.remove(rand.nextInt(positions.size()));
-        }
-        for (int i = 0; i < wires.length; i++) {
-            if (positions.contains(i)) {
-                int color = rand.nextInt(6);
-                if (color == 0) {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[0]});
-                } else if (color == 1) {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[1]});
-                } else if (color == 2) {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[2]});
-                } else if (color == 3) {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[0], COLORS[1]});
-                } else if (color == 4) {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[0], COLORS[2]});
-                } else {
-                    wires[i] = new ComplicatedWire(imageFromPosition(i), new Color[]{COLORS[1], COLORS[2]});
-                }
-                stars[i] = rand.nextBoolean();
-                lights[i] = rand.nextBoolean();
-            }
+        int[] positions = Util.goodUniqueIndexes(rand, wires.length, numWires);
+        for (int position : positions) {
+            int color = rand.nextInt(6);
+            wires[position] = switch(color) {
+                case 0 -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[0]});
+                case 1 -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[1]});
+                case 2 -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[2]});
+                case 3 -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[0], COLORS[1]});
+                case 4 -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[0], COLORS[2]});
+                default -> new ComplicatedWire(imageFromPosition(position), new Color[]{COLORS[1], COLORS[2]});
+            };
+            
+            stars[position] = rand.nextBoolean();
+            lights[position] = rand.nextBoolean();
         }
     }
 
@@ -229,7 +219,7 @@ public class ComplicatedWiresModule extends ModuleBase {
             topHoles[i].setStroke(Color.GRAY);
             topHoles[i].setStrokeType(StrokeType.INSIDE);
         }
-        HBox topHoleHbox = new HBox(-1);
+        HBox topHoleHbox = new HBox();
         topHoleHbox.getChildren().addAll(topHoles);
         AnchorPane.setTopAnchor(topHoleHbox, 50.0);
         AnchorPane.setLeftAnchor(topHoleHbox, 15.0);
@@ -242,7 +232,7 @@ public class ComplicatedWiresModule extends ModuleBase {
             bottomHoles[i].setStrokeType(StrokeType.INSIDE);
         }
 
-        HBox bottomHoleHbox = new HBox(-1);
+        HBox bottomHoleHbox = new HBox();
         bottomHoleHbox.getChildren().addAll(bottomHoles);
         AnchorPane.setBottomAnchor(bottomHoleHbox, 35.0);
         AnchorPane.setLeftAnchor(bottomHoleHbox, 15.0);
@@ -260,7 +250,7 @@ public class ComplicatedWiresModule extends ModuleBase {
             starBoxes[i].setMaxSize(25, 25);
         }
 
-        HBox starBox = new HBox(4);
+        HBox starBox = new HBox(5);
         starBox.getChildren().addAll(starBoxes);
         starBox.setMinSize(180, 30);
         starBox.setMaxSize(180, 30);
@@ -281,22 +271,6 @@ public class ComplicatedWiresModule extends ModuleBase {
         }
 
         getChildren().add(box);
-    }
-
-    private double placeWire(int i) {
-        if (i == 0) {
-            return 24;
-        } else if (i == 1) {
-            return 60;
-        } else if (i == 2) {
-            return 85;
-        } else if (i == 3) {
-            return 115;
-        } else if (i == 4) {
-            return 144;
-        } else {
-            return 185;
-        }
     }
 
     private Image imageFromPosition(int position) {

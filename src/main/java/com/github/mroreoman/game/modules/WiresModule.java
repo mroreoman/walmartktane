@@ -17,13 +17,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import com.github.mroreoman.Util;
 import com.github.mroreoman.game.Bomb;
 
 public class WiresModule extends ModuleBase {
     private static final Color[] COLORS = {Color.RED, Color.WHITE, Color.BLUE, Color.YELLOW, Color.BLACK};
-    private static final int WIRE_SLOTS = 6;
 
-    private final Wire[] wires = new Wire[WIRE_SLOTS];
+    private final Wire[] wires = new Wire[6];
 
     private class Wire extends Button {
         private final Color color;
@@ -66,16 +66,10 @@ public class WiresModule extends ModuleBase {
     }
 
     private void initWires(Random rand) {
-        ArrayList<Integer> positions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
         int numWires = rand.nextInt(4) + 3;
-        for (int i = numWires; i < WIRE_SLOTS; i++) {
-            positions.remove(rand.nextInt(positions.size()));
-        }
-
-        for (int i = 0; i < WIRE_SLOTS; i++) {
-            if (positions.contains(i)) {
-                wires[i] = new Wire(imageFromPosition(i), COLORS[rand.nextInt(COLORS.length)]);
-            }
+        int[] positions = Util.goodUniqueIndexes(rand, wires.length, numWires);
+        for (int position : positions) {
+            wires[position] = new Wire(imageFromPosition(position), COLORS[rand.nextInt(COLORS.length)]);
         }
     }
 
@@ -192,7 +186,7 @@ public class WiresModule extends ModuleBase {
         for (int i = 0; i < wires.length; i++) {
             if (wires[i] != null) {
                 AnchorPane.setLeftAnchor(wires[i], 25.0);
-                AnchorPane.setTopAnchor(wires[i], placeWire(i));
+                AnchorPane.setTopAnchor(wires[i], calculateWireY(i));
                 box.getChildren().add(wires[i]);
             }
         }
@@ -200,7 +194,7 @@ public class WiresModule extends ModuleBase {
         getChildren().add(box);
     }
 
-    private double placeWire(int i) {
+    private double calculateWireY(int i) {
         if (i == 0) {
             return 24;
         } else if (i == 1) {
