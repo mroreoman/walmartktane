@@ -16,10 +16,13 @@ import javafx.geometry.Insets;
 import javafx.util.converter.NumberStringConverter;
 
 public final class Util {
-    public static Background simpleBackground(Color color) {
-        return new Background(new BackgroundFill(color, null, null));
-    }
 
+    /**
+     * Removes an entry from a unique list of ints
+     *
+     * @param oldArr array of ints containing the int to be removed
+     * @param index int to be removed
+     */
     public static int[] removeIndex(int[] oldArr, int index) {
         int[] newArr = new int[oldArr.length - 1];
         int oldIt = 0;
@@ -33,6 +36,13 @@ public final class Util {
         return newArr;
     }
 
+    /**
+     * Generates an array of random indexes for an array of a specified length
+     * 
+     * @param rand the random to be used
+     * @param length length of the orginal array of indexes
+     * @param num amount of indexes to be chosen
+     */
     public static int[] goodUniqueIndexes(Random rand, int length, int num) {
         int[] arr = new int[length];
         for (int i = 0; i < arr.length; i++) {
@@ -47,6 +57,13 @@ public final class Util {
         return indexes;
     }
 
+    /**
+     * Picks random numbers out of a given array
+     * 
+     * @param rand the random to be used
+     * @param oldArr the original array
+     * @param num amount of numbers to be chosen
+     */
     public static int[] randomUniqueIndexes(Random rand, int[] oldArr, int num) {
         int[] newArr = new int[num];
         int i = 0;
@@ -58,6 +75,11 @@ public final class Util {
         return newArr;
     }
 
+    /**
+     * Generates an array of indexes of a specified length
+     * 
+     * @param num length of the array
+     */
     public static int[] intAsArray(int num) {
         int[] arr = new int[num];
         for (int i = 0; i < num; i++) {
@@ -79,6 +101,10 @@ public final class Util {
             text.setFont(bodyFont(15));
             text.setFill(Color.BLACK);
         }
+    }
+
+    public static Background simpleBackground(Color color) {
+        return new Background(new BackgroundFill(color, null, null));
     }
 
     public static Border goodBorder(Color color) {
