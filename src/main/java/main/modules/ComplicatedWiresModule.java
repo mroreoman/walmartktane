@@ -22,15 +22,13 @@ import javafx.scene.shape.StrokeType;
 import main.Bomb;
 
 public class ComplicatedWiresModule extends ModuleBase {
-
-  private static Random rand = new Random();
   private static final Color[] COLORS = {Color.WHITE, Color.RED, Color.BLUE};
+
   private final ComplicatedWire[] wires = new ComplicatedWire[6];
   private final boolean[] stars = new boolean[6];
   private final boolean[] lights = new boolean[6];
 
   private class ComplicatedWire extends Button {
-
     private final Color[] color;
     private boolean isCorrect = false;
     private boolean isCut = false;
@@ -69,18 +67,18 @@ public class ComplicatedWiresModule extends ModuleBase {
     }
   }
 
-  public ComplicatedWiresModule(Bomb bomb) {
-    this(bomb, rand.nextInt(3) + 4);
-  }
-
-  public ComplicatedWiresModule(Bomb bomb, int numWires) {
+  public ComplicatedWiresModule(Bomb bomb, Random rand) {
     super("Complicated Wires", bomb);
-    initComplicatedWires(numWires);
+    do {
+      initComplicatedWires(rand);
+      setSolution();
+    } while (!checkSolvable());
     initGUI();
   }
 
-  private void initComplicatedWires(int numWires) {
+  private void initComplicatedWires(Random rand) {
     ArrayList<Integer> positions = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5));
+    int numWires = rand.nextInt(3) + 4;
     int emptyWires = wires.length - numWires;
     while (emptyWires-- > 0) {
       positions.remove(rand.nextInt(positions.size()));
@@ -105,7 +103,6 @@ public class ComplicatedWiresModule extends ModuleBase {
         lights[i] = rand.nextBoolean();
       }
     }
-    setSolution();
   }
 
   private void setSolution() {
@@ -163,9 +160,6 @@ public class ComplicatedWiresModule extends ModuleBase {
           }
         }
       }
-    }
-    if (!checkSolvable()) {
-      initComplicatedWires(rand.nextInt(3) + 4);
     }
   }
 

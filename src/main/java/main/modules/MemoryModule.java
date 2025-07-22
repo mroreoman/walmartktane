@@ -19,8 +19,6 @@ import main.Bomb;
 import main.Util;
 
 public class MemoryModule extends ModuleBase {
-  private static Random rand = new Random();
-
   private String[] labels = new String[5];
   private int[] positions = new int[5];
   private int stage = 0;
@@ -39,16 +37,16 @@ public class MemoryModule extends ModuleBase {
     int position;
     boolean correct = false;
 
-    private Mem(String label, int position) {
+    private Mem(String label, int position, Random rand) {
       super(label);
       this.label = label;
       this.position = position + 1;
-      setOnAction(event -> press());
+      setOnAction(event -> press(rand));
       setPadding(Insets.EMPTY);
       setStyle("-fx-min-width: 35px; -fx-min-height: 60px; -fx-max-width: 35px; -fx-max-height: 60px; -fx-background-color: darkkhaki; -fx-font-family: 'Roboto Condensed'; -fx-font-size: 45; -fx-font-weight: bold; -fx-text-fill: black");
     }
 
-    private void press() {
+    private void press(Random rand) {
       if (isSolved()) {
         submitSolved(true);
         return;
@@ -60,7 +58,7 @@ public class MemoryModule extends ModuleBase {
         if (stage == 5) {
           submit(true);
         } else {
-          initMemory();
+          initMemory(rand);
           updateGUI();
         }
       } else {
@@ -69,25 +67,25 @@ public class MemoryModule extends ModuleBase {
         for (Rectangle light: lights) {
           light.setFill(Color.TRANSPARENT);
         }
-        initMemory();
+        initMemory(rand);
         updateGUI();
       }
     }
   }
 
-  public MemoryModule(Bomb bomb) {
+  public MemoryModule(Bomb bomb, Random rand) {
     super("Memory", bomb);
-    initMemory();
+    initMemory(rand);
     initGUI();
   }
 
-  private void initMemory() {
+  private void initMemory(Random rand) {
     displayLabel = new Text(String.valueOf(rand.nextInt(4) + 1));
     displayLabel.setFill(Color.WHITE);
     displayLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 60));
-    int[] butons = Util.goodUniqueIndexes(4, 4);
+    int[] butons = Util.goodUniqueIndexes(rand, 4, 4);
     for (int i = 0; i < 4; i++) {
-      mems[i] = new Mem(String.valueOf(butons[i] + 1), i);
+      mems[i] = new Mem(String.valueOf(butons[i] + 1), i, rand);
     }
     setSolution();
   }

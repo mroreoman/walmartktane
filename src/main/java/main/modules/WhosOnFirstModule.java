@@ -2,7 +2,6 @@ package main.modules;
 
 import java.util.HashMap;
 import java.util.Map;
-import static java.util.Map.entry;
 import java.util.Random;
 
 import javafx.geometry.Insets;
@@ -22,7 +21,6 @@ import main.Bomb;
 import main.Util;
 
 public class WhosOnFirstModule extends ModuleBase {
-  private static Random rand = new Random();
   private int stage = 0;
   private WOF[] wofs = new WOF[6];
   private Text displayLabel;
@@ -34,82 +32,82 @@ public class WhosOnFirstModule extends ModuleBase {
   private VBox lightBox;
  
   private static HashMap<String, Integer> DISPLAY_LABELS = new HashMap<>(Map.ofEntries(
-    entry("YES", 2),
-    entry("FIRST", 1),
-    entry("DISPLAY", 5),
-    entry("OKAY", 1),
-    entry("SAYS", 5),
-    entry("NOTHING", 2),
-    entry("", 4),
-    entry("BLANK", 3),
-    entry("NO", 5),
-    entry("LED", 2),
-    entry("LEAD", 5),
-    entry("READ", 3),
-    entry("RED", 3),
-    entry("REED", 4),
-    entry("LEED", 4),
-    entry("HOLD ON", 5),
-    entry("YOU", 3),
-    entry("YOU ARE", 5),
-    entry("YOUR", 3),
-    entry("YOU'RE", 3),
-    entry("UR", 0),
-    entry("THERE", 5),
-    entry("THEY'RE", 4),
-    entry("THEIR", 3),
-    entry("THEY ARE", 2),
-    entry("SEE", 5),
-    entry("C", 1),
-    entry("CEE", 5)
+      Map.entry("YES", 2),
+      Map.entry("FIRST", 1),
+      Map.entry("OKAY", 1),
+      Map.entry("DISPLAY", 5),
+      Map.entry("SAYS", 5),
+      Map.entry("NOTHING", 2),
+      Map.entry("", 4),
+      Map.entry("BLANK", 3),
+      Map.entry("NO", 5),
+      Map.entry("LED", 2),
+      Map.entry("LEAD", 5),
+      Map.entry("READ", 3),
+      Map.entry("RED", 3),
+      Map.entry("REED", 4),
+      Map.entry("LEED", 4),
+      Map.entry("HOLD ON", 5),
+      Map.entry("YOU", 3),
+      Map.entry("YOU ARE", 5),
+      Map.entry("YOUR", 3),
+      Map.entry("YOU'RE", 3),
+      Map.entry("UR", 0),
+      Map.entry("THERE", 5),
+      Map.entry("THEY'RE", 4),
+      Map.entry("THEIR", 3),
+      Map.entry("THEY ARE", 2),
+      Map.entry("SEE", 5),
+      Map.entry("C", 1),
+      Map.entry("CEE", 5)
   ));
-  private static String[] BUTTON_LABELS = {"READY", "FIRST", "NO", "BLANK", "NOTHING", "YES", "WHAT", "UHHH", "LEFT", "RIGHT", "MIDDLE", "OKAY", "WAIT", "PRESS", "YOU", "YOU ARE", "YOUR", "YOU'RE", "UR", "U", "UH HUH", "UH UH", "WHAT?", "DONE", "NEXT", "HOLD", "SURE", "LIKE"};
+  private static final String[] BUTTON_LABELS = {"READY", "FIRST", "NO", "BLANK", "NOTHING", "YES", "WHAT", "UHHH", "LEFT", "RIGHT", "MIDDLE", "OKAY", "WAIT", "PRESS", "YOU", "YOU ARE", "YOUR", "YOU'RE", "UR", "U", "UH HUH", "UH UH", "WHAT?", "DONE", "NEXT", "HOLD", "SURE", "LIKE"};
   
-  private static HashMap<String, String[]> BUTTON_LISTS = new HashMap<>(Map.ofEntries(
-  entry("READY", new String[]{"YES", "OKAY", "WHAT", "MIDDLE", "LEFT", "PRESS", "RIGHT", "BLANK", "READY"}),
-  entry("FIRST", new String[]{"LEFT", "OKAY", "YES", "MIDDLE", "NO", "RIGHT", "NOTHING", "UHHH", "WAIT", "READY", "BLANK", "WHAT", "PRESS", "FIRST"}), 
-  entry("NO", new String[]{"BLANK", "UHHH", "WAIT", "FIRST", "WHAT", "READY", "RIGHT", "YES", "NOTHING", "LEFT", "PRESS", "OKAY", "NO"}), 
-  entry("BLANK", new String[]{"WAIT", "RIGHT", "OKAY", "MIDDLE", "BLANK"}),
-  entry("NOTHING", new String[]{"UHHH", "RIGHT", "OKAY", "MIDDLE", "YES", "BLANK", "NO", "PRESS", "LEFT", "WHAT", "WAIT", "FIRST", "NOTHING"}),
-  entry("YES", new String[]{"OKAY", "RIGHT", "UHHH", "MIDDLE", "FIRST", "WHAT", "PRESS", "READY", "NOTHING", "YES"}),
-  entry("WHAT", new String[]{"UHHH", "WHAT"}),
-  entry("UHHH", new String[]{"READY", "NOTHING", "LEFT", "WHAT", "OKAY", "YES", "RIGHT", "NO", "PRESS", "BLANK", "UHHH"}),
-  entry("LEFT", new String[]{"RIGHT", "LEFT"}),
-  entry("RIGHT", new String[]{"YES", "NOTHING", "READY", "PRESS", "NO", "WAIT", "WHAT", "RIGHT"}),
-  entry("MIDDLE", new String[]{"BLANK", "READY", "OKAY", "WHAT", "NOTHING", "PRESS", "NO", "WAIT", "LEFT", "MIDDLE"}),
-  entry("OKAY", new String[]{"MIDDLE", "NO", "FIRST", "YES", "UHHH", "NOTHING", "WAIT", "OKAY"}),
-  entry("WAIT", new String[]{"UHHH", "NO", "BLANK", "OKAY", "YES", "LEFT", "FIRST", "PRESS", "WHAT", "WAIT"}),
-  entry("PRESS", new String[]{"RIGHT", "MIDDLE", "YES", "READY", "PRESS"}),
-  entry("YOU", new String[]{"SURE", "YOU ARE", "YOUR", "YOU'RE", "NEXT", "UH HUH", "UR", "HOLD", "WHAT?", "YOU"}),
-  entry("YOU ARE", new String[]{"YOUR", "NEXT", "LIKE", "UH HUH", "WHAT?", "DONE", "UH UH", "HOLD", "YOU", "U", "YOU'RE", "SURE", "UR", "YOU ARE"}),
-  entry("YOUR", new String[]{"UH UH", "YOU ARE", "UH HUH", "YOUR"}),
-  entry("YOU'RE", new String[]{"YOU", "YOU'RE"}),
-  entry("UR", new String[]{"DONE", "U", "UR"}),
-  entry("U", new String[]{"UH HUH", "SURE", "NEXT", "WHAT?", "YOU'RE", "UR", "UH UH", "DONE", "U"}),
-  entry("UH HUH", new String[]{"UH HUH"}),
-  entry("UH UH", new String[]{"UR", "U", "YOU ARE", "YOU'RE", "NEXT", "UH UH"}),
-  entry("WHAT?", new String[]{"YOU", "HOLD", "YOU'RE", "YOUR", "U", "DONE", "UH UH", "LIKE", "YOU ARE", "UH HUH", "UR", "NEXT", "WHAT?"}),
-  entry("DONE", new String[]{"SURE", "UH HUH", "NEXT", "WHAT?", "YOUR", "UR", "YOU'RE", "HOLD", "LIKE", "YOU", "U", "YOU ARE", "UH UH", "DONE"}),
-  entry("NEXT", new String[]{"WHAT?", "UH HUH", "UH UH", "YOUR", "HOLD", "SURE", "NEXT"}),
-  entry("HOLD", new String[]{"YOU ARE", "U", "DONE", "UH UH", "YOU", "UR", "SURE", "WHAT?", "YOU'RE", "NEXT", "HOLD"}),
-  entry("SURE", new String[]{"YOU ARE", "DONE", "LIKE", "YOU'RE", "YOU", "HOLD", "UH HUH", "UR", "SURE"}),
-  entry("LIKE", new String[]{"YOU'RE", "NEXT", "U", "UR", "HOLD", "DONE", "UH UH", "WHAT?", "UH HUH", "YOU", "LIKE"})
-));
+  private static final HashMap<String, String[]> BUTTON_LISTS = new HashMap<>(Map.ofEntries(
+      Map.entry("READY", new String[]{"YES", "OKAY", "WHAT", "MIDDLE", "LEFT", "PRESS", "RIGHT", "BLANK", "READY"}),
+      Map.entry("FIRST", new String[]{"LEFT", "OKAY", "YES", "MIDDLE", "NO", "RIGHT", "NOTHING", "UHHH", "WAIT", "READY", "BLANK", "WHAT", "PRESS", "FIRST"}),
+      Map.entry("NO", new String[]{"BLANK", "UHHH", "WAIT", "FIRST", "WHAT", "READY", "RIGHT", "YES", "NOTHING", "LEFT", "PRESS", "OKAY", "NO"}),
+      Map.entry("BLANK", new String[]{"WAIT", "RIGHT", "OKAY", "MIDDLE", "BLANK"}),
+      Map.entry("NOTHING", new String[]{"UHHH", "RIGHT", "OKAY", "MIDDLE", "YES", "BLANK", "NO", "PRESS", "LEFT", "WHAT", "WAIT", "FIRST", "NOTHING"}),
+      Map.entry("YES", new String[]{"OKAY", "RIGHT", "UHHH", "MIDDLE", "FIRST", "WHAT", "PRESS", "READY", "NOTHING", "YES"}),
+      Map.entry("WHAT", new String[]{"UHHH", "WHAT"}),
+      Map.entry("UHHH", new String[]{"READY", "NOTHING", "LEFT", "WHAT", "OKAY", "YES", "RIGHT", "NO", "PRESS", "BLANK", "UHHH"}),
+      Map.entry("LEFT", new String[]{"RIGHT", "LEFT"}),
+      Map.entry("RIGHT", new String[]{"YES", "NOTHING", "READY", "PRESS", "NO", "WAIT", "WHAT", "RIGHT"}),
+      Map.entry("MIDDLE", new String[]{"BLANK", "READY", "OKAY", "WHAT", "NOTHING", "PRESS", "NO", "WAIT", "LEFT", "MIDDLE"}),
+      Map.entry("OKAY", new String[]{"MIDDLE", "NO", "FIRST", "YES", "UHHH", "NOTHING", "WAIT", "OKAY"}),
+      Map.entry("WAIT", new String[]{"UHHH", "NO", "BLANK", "OKAY", "YES", "LEFT", "FIRST", "PRESS", "WHAT", "WAIT"}),
+      Map.entry("PRESS", new String[]{"RIGHT", "MIDDLE", "YES", "READY", "PRESS"}),
+      Map.entry("YOU", new String[]{"SURE", "YOU ARE", "YOUR", "YOU'RE", "NEXT", "UH HUH", "UR", "HOLD", "WHAT?", "YOU"}),
+      Map.entry("YOU ARE", new String[]{"YOUR", "NEXT", "LIKE", "UH HUH", "WHAT?", "DONE", "UH UH", "HOLD", "YOU", "U", "YOU'RE", "SURE", "UR", "YOU ARE"}),
+      Map.entry("YOUR", new String[]{"UH UH", "YOU ARE", "UH HUH", "YOUR"}),
+      Map.entry("YOU'RE", new String[]{"YOU", "YOU'RE"}),
+      Map.entry("UR", new String[]{"DONE", "U", "UR"}),
+      Map.entry("U", new String[]{"UH HUH", "SURE", "NEXT", "WHAT?", "YOU'RE", "UR", "UH UH", "DONE", "U"}),
+      Map.entry("UH HUH", new String[]{"UH HUH"}),
+      Map.entry("UH UH", new String[]{"UR", "U", "YOU ARE", "YOU'RE", "NEXT", "UH UH"}),
+      Map.entry("WHAT?", new String[]{"YOU", "HOLD", "YOU'RE", "YOUR", "U", "DONE", "UH UH", "LIKE", "YOU ARE", "UH HUH", "UR", "NEXT", "WHAT?"}),
+      Map.entry("DONE", new String[]{"SURE", "UH HUH", "NEXT", "WHAT?", "YOUR", "UR", "YOU'RE", "HOLD", "LIKE", "YOU", "U", "YOU ARE", "UH UH", "DONE"}),
+      Map.entry("NEXT", new String[]{"WHAT?", "UH HUH", "UH UH", "YOUR", "HOLD", "SURE", "NEXT"}),
+      Map.entry("HOLD", new String[]{"YOU ARE", "U", "DONE", "UH UH", "YOU", "UR", "SURE", "WHAT?", "YOU'RE", "NEXT", "HOLD"}),
+      Map.entry("SURE", new String[]{"YOU ARE", "DONE", "LIKE", "YOU'RE", "YOU", "HOLD", "UH HUH", "UR", "SURE"}),
+      Map.entry("LIKE", new String[]{"YOU'RE", "NEXT", "U", "UR", "HOLD", "DONE", "UH UH", "WHAT?", "UH HUH", "YOU", "LIKE"})
+  ));
   
   private class WOF extends Button {
     String label;
     int position;
     
-    private WOF(String label, int position){
+    private WOF(String label, int position, Random rand){
       super(label);
       this.label = label;
       this.position = position;
-      setOnAction(event -> press());
+      setOnAction(event -> press(rand));
       setPadding(Insets.EMPTY);
       setStyle("-fx-min-width: 65px; -fx-min-height: 30px; -fx-max-width: 65px; -fx-max-height: 30px; -fx-background-color: darkkhaki; -fx-font-family: 'Roboto Condensed'; -fx-font-size: 12; -fx-font-weight: bold;");
     }
       
-    private void press() {
+    private void press(Random rand) {
       if (isSolved()) {
         submitSolved(false);
         return;
@@ -119,31 +117,31 @@ public class WhosOnFirstModule extends ModuleBase {
         if (stage >= 3) {
           submit(true);
         } else {
-          initWhosOnFirst();
+          initWhosOnFirst(rand);
           updateGUI();
         }
       }
       else {
         submit(false);
-        initWhosOnFirst();
+        initWhosOnFirst(rand);
         updateGUI();
       }
     }
   }
 
-  public WhosOnFirstModule(Bomb bomb) {
+  public WhosOnFirstModule(Bomb bomb, Random rand) {
     super("Who's on First", bomb);
-    initWhosOnFirst();
+    initWhosOnFirst(rand);
     initGUI();
   }
 
-  private void initWhosOnFirst() {
+  private void initWhosOnFirst(Random rand) {
     displayLabel = new Text((String)(DISPLAY_LABELS.keySet().toArray()[rand.nextInt(DISPLAY_LABELS.size())]));
     displayLabel.setFill(Color.WHITE);
     displayLabel.setFont(Font.font("Roboto Condensed", FontWeight.SEMI_BOLD, 20));
-    int[] butons = Util.randomUniqueIndexes(Util.intAsArray(BUTTON_LABELS.length), 6);
+    int[] butons = Util.randomUniqueIndexes(rand, Util.intAsArray(BUTTON_LABELS.length), 6);
     for (int i = 0; i < 6; i++) {
-      wofs[i] = new WOF(BUTTON_LABELS[butons[i]], i);
+      wofs[i] = new WOF(BUTTON_LABELS[butons[i]], i, rand);
     }
   }
 

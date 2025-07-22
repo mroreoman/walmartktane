@@ -18,10 +18,9 @@ import javafx.scene.effect.Glow;
 import main.Bomb;
 
 public class SimonSaysModule extends ModuleBase {
-  private static Random rand = new Random();
-  private static Color[] COLORS = {Color.web("0x800000"), Color.web("0x000080"), Color.web("0x008000"), Color.web("0x808000")};
+  private static final Color[] COLORS = {Color.web("0x800000"), Color.web("0x000080"), Color.web("0x008000"), Color.web("0x808000")};
   
-  private Color[] flashes = new Color[rand.nextInt(3) + 3];
+  private Color[] flashes;
   private HashMap<Color, Simon> simons = new HashMap<>(4);
   private int stage = 0;
   private int press = 0;
@@ -85,18 +84,19 @@ public class SimonSaysModule extends ModuleBase {
     }
   }
 
-  public SimonSaysModule(Bomb bomb) {
+  public SimonSaysModule(Bomb bomb, Random rand) {
     super("Simon Says", bomb);
-    initSimonSays();
+    initSimonSays(rand);
     initGUI();
   }
 
-  private void initSimonSays() {
+  private void initSimonSays(Random rand) {
     simons.put(COLORS[0], new Simon(COLORS[0]));
     simons.put(COLORS[1], new Simon(COLORS[1]));
     simons.put(COLORS[2], new Simon(COLORS[2]));
     simons.put(COLORS[3], new Simon(COLORS[3]));
 
+    flashes = new Color[rand.nextInt(3) + 3];
     for (int i = 0; i < flashes.length; i++) {
       flashes[i] = COLORS[rand.nextInt(4)];
     }

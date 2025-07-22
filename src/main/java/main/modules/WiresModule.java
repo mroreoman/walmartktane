@@ -5,16 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.lang.RuntimeException;
-// import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
-// import javafx.scene.Scene;
-// import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorInput;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-// import javafx.scene.layout.BorderStroke;
-// import javafx.scene.layout.Border;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
@@ -25,18 +20,14 @@ import main.Bomb;
 
 public class WiresModule extends ModuleBase {
   private static final Color[] COLORS = {Color.RED, Color.WHITE, Color.BLUE, Color.YELLOW, Color.BLACK};
-  private static final Random rand = new Random();
-  
-  private final Wire[] wires = new Wire[6];
+  private static final int WIRE_SLOTS = 6;
+
+  private final Wire[] wires = new Wire[WIRE_SLOTS];
 
   private class Wire extends Button {
     private final Color color;
     private boolean isCorrect = false;
     private boolean isCut = false;
-
-    public Wire(Image image) {
-      this(image, COLORS[rand.nextInt(COLORS.length)]);
-    }
 
     public Wire(Image image, Color color) {
       super("", new ImageView(image));
@@ -66,49 +57,31 @@ public class WiresModule extends ModuleBase {
     
   }
 
-  public WiresModule(Bomb bomb) {
-    this(bomb, rand.nextInt(4) + 3);
-  }
-
-  public WiresModule(Bomb bomb, int numWires) {
+  public WiresModule(Bomb bomb, Random rand) {
     super("Wires", bomb);
-    initWires(numWires);
+    initWires(rand);
     setSolution();
     initGUI();
   }
 
-  public WiresModule(Bomb bomb, Color[] colors) {
-    super("Wires", bomb);
-    initWires(colors);
-    setSolution();
-    initGUI();
-  }
-
-  private void initWires(int numWires) {
-    ArrayList<Integer> positions = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5));
-    int emptyWires = wires.length - numWires;
-    while (emptyWires-- > 0) {
+  private void initWires(Random rand) {
+    ArrayList<Integer> positions = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+    int numWires = rand.nextInt(4) + 3;
+    for (int i = numWires; i < WIRE_SLOTS; i++) {
       positions.remove(rand.nextInt(positions.size()));
     }
-    for (int i = 0; i < wires.length; i++) {
-      if (positions.contains(i)) {
-        wires[i] = new Wire(imageFromPosition(i));
-      }
-    }
-  }
 
-  private void initWires(Color[] colors) {
-    for (int i = 0; i < wires.length; i++) {
-      if (colors[i] != null) {
-        wires[i] = new Wire(imageFromPosition(i), colors[i]);
+    for (int i = 0; i < WIRE_SLOTS; i++) {
+      if (positions.contains(i)) {
+        wires[i] = new Wire(imageFromPosition(i), COLORS[rand.nextInt(COLORS.length)]);
       }
     }
   }
 
   private void setSolution() {
     //make list of wires without nulls
-    ArrayList<Wire> wires = new ArrayList<Wire>();
-    for (Wire wire: this.wires) {
+    ArrayList<Wire> wires = new ArrayList<>();
+    for (Wire wire : this.wires) {
       if (wire != null) {
         wires.add(wire);
       }

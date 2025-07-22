@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
 
+import java.util.Random;
 import java.util.function.Consumer;
 
 import main.Bomb;
@@ -100,6 +101,7 @@ public class BombCreationBuilder implements Builder<Region> {
         create.setOnAction(event -> {
             try {
                 Bomb b = new Bomb(
+                        new Random(),
                         model.getBombCreationAmount(),
                         model.getBombCreationTime(),
                         model.getBombCreationStrikes(),

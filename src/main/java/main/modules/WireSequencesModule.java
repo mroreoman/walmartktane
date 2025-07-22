@@ -22,8 +22,7 @@ import main.Bomb;
 import main.Util;
 
 public class WireSequencesModule extends ModuleBase {
-  private static final Random rand = new Random();
-  private final Color[] COLORS = {Color.RED, Color.BLUE, Color.BLACK};
+  private static final Color[] COLORS = {Color.RED, Color.BLUE, Color.BLACK};
 
   private int redCount = 0;
   private int blueCount = 0;
@@ -47,10 +46,10 @@ public class WireSequencesModule extends ModuleBase {
     private WireSequence[] wires;
     private boolean isSolved = false;
 
-    private Panel(int numWires) {
+    private Panel(int numWires, Random rand) {
       wires = new WireSequence[numWires];
       int[] positions = new int[numWires];
-      positions = Util.goodUniqueIndexes(3, numWires);
+      positions = Util.goodUniqueIndexes(rand, 3, numWires);
       int j = 0;
       for (int i = 0; i < 3; i++) {
         for (int position: positions) {
@@ -144,15 +143,15 @@ public class WireSequencesModule extends ModuleBase {
     }
   }
 
-  public WireSequencesModule(Bomb bomb) {
+  public WireSequencesModule(Bomb bomb, Random rand) {
     super("Wire Sequences", bomb);
-    initWireSequences();
+    initWireSequences(rand);
     initGUI();
   }
 
-  private void initWireSequences() {
+  private void initWireSequences(Random rand) {
     for (int i = 0; i < 4; i++) {
-      panels[i] = new Panel(rand.nextInt(3) + 1);
+      panels[i] = new Panel(rand.nextInt(3) + 1, rand);
     }
   }
 

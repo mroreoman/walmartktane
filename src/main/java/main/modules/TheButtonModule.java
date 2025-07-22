@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 
 import main.Bomb;
@@ -18,44 +17,41 @@ import main.Util;
 public class TheButtonModule extends ModuleBase {
   private static final String[] LABELS = {"Abort", "Detonate", "Hold", "Press"};
   private static final Color[] COLORS = {Color.BLUE, Color.RED, Color.WHITE, Color.YELLOW, Color.BLACK};
-  private static final Random rand = new Random();
-  
-  private String label;
-  private Color color;
-  private Rectangle strip;
+
+  private final boolean tapSolve;
   private Color stripColor;
   private int stripSolution;
-  private boolean tapSolve;
   private boolean isHeld = false;
-  private Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> holdButton()));
-  
-  public TheButtonModule(Bomb bomb) {
-    this(bomb, COLORS[rand.nextInt(5)], LABELS[rand.nextInt(4)]);
-  }
 
-  public TheButtonModule(Bomb bomb, Color color, String label) {
+  private final String label;
+  private final Color color;
+  private final Timeline timeline;
+  private Rectangle strip;
+
+  public TheButtonModule(Bomb bomb, Random rand) {
     super("The Button", bomb);
-    this.color = color;
-    this.label = label;
-    setSolution();
+    color = COLORS[rand.nextInt(5)];
+    label = LABELS[rand.nextInt(4)];
+    tapSolve = setSolution();
+    timeline = new Timeline(new KeyFrame(Duration.millis(250), e -> holdButton(rand)));
     initGUI();
   }
 
-  public void setSolution() {
+  private boolean setSolution() {
     if (color == Color.BLUE && label.equals("Abort")) {
-      tapSolve = false;
+      return false;
     } else if (getEdgework().numBatteries() > 1 && label.equals("Detonate")) {
-      tapSolve = true;
+      return true;
     } else if (color == Color.WHITE && getEdgework().hasIndicator("CAR", true)) {
-      tapSolve = false;
+      return false;
     } else if (getEdgework().numBatteries() > 2 && getEdgework().hasIndicator("FRK", true)) {
-      tapSolve = true;
+      return true;
     } else if (color == Color.YELLOW) {
-      tapSolve = false;
+      return false;
     } else if (color == Color.RED && label.equals("Hold")) {
-      tapSolve = true;
+      return true;
     } else {
-      tapSolve = false;
+      return false;
     }
   }
 
@@ -97,7 +93,7 @@ public class TheButtonModule extends ModuleBase {
     }
   }
   
-  public void genStrip() {
+  public void genStrip(Random rand) {
     stripColor = COLORS[rand.nextInt(4)];
     setStripSolution();
     strip.setFill(stripColor);
@@ -116,9 +112,9 @@ public class TheButtonModule extends ModuleBase {
     submit(tapSolve);
   }
 
-  public void holdButton() {
+  public void holdButton(Random rand) {
     isHeld = true;
-    genStrip();
+    genStrip(rand);
   }
 
   public void play() {}

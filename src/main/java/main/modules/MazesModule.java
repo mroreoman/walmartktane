@@ -18,7 +18,6 @@ import javafx.scene.shape.Rectangle;
 import main.Bomb;
 
 public class MazesModule extends ModuleBase {
-  private static final Random rand = new Random();
   private static final double CELL_SIZE = 22.5;
   private static final double SQUARE_SIZE = 7;
   private static final double TRIANGLE_HEIGHT = Math.sqrt(Math.pow(15,2)-Math.pow(7.5,2));
@@ -157,7 +156,7 @@ public class MazesModule extends ModuleBase {
     }
   }
 
-  public MazesModule(Bomb bomb) {
+  public MazesModule(Bomb bomb, Random rand) {
     super("Mazes", bomb);
     mazeIndex = rand.nextInt(9);
     for (int i = 0; i < 6; i++) {

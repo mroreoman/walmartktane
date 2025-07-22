@@ -24,11 +24,11 @@ import javafx.scene.text.Text;
 import main.Bomb;
 
 public class MorseCodeModule extends ModuleBase {
-  private static Random rand = new Random();
-  private String[] words = {"shell", "halls", "slick", "trick", "boxes", "leaks", "strobe", "bistro", "flick", "bombs", "break", "brick", "steak", "sting", "vector", "beats"};
-  private double[] frequencies = {3.505, 3.515, 3.522, 3.532, 3.535, 3.542, 3.545, 3.552, 3.555, 3.565, 3.572, 3.575, 3.582, 3.592, 3.595, 3.600};
-  private String word;
-  private double frequency;
+  private static final String[] words = {"shell", "halls", "slick", "trick", "boxes", "leaks", "strobe", "bistro", "flick", "bombs", "break", "brick", "steak", "sting", "vector", "beats"};
+  private static final double[] frequencies = {3.505, 3.515, 3.522, 3.532, 3.535, 3.542, 3.545, 3.552, 3.555, 3.565, 3.572, 3.575, 3.582, 3.592, 3.595, 3.600};
+
+  private final String word;
+  private final double frequency;
 
   private AnchorPane box;
   private Polygon leftWire;
@@ -114,16 +114,12 @@ public class MorseCodeModule extends ModuleBase {
     }
   }
 
-  public MorseCodeModule(Bomb bomb) {
+  public MorseCodeModule(Bomb bomb, Random rand) {
     super("Morse Code", bomb);
-    initMorseCode();
-    initGUI();
-  }
-
-  private void initMorseCode() {
     int index = rand.nextInt(words.length);
     word = words[index];
     frequency = frequencies[index];
+    initGUI();
   }
 
   private void initGUI() {
@@ -152,9 +148,9 @@ public class MorseCodeModule extends ModuleBase {
     });
 
     leftHolder = new Rectangle(10, 40, Color.GRAY);
-    
+
     light = new Light();
-    
+
     rightHolder = new Rectangle(10, 40, Color.GRAY);
 
     rightCap = new Polygon();
@@ -257,7 +253,7 @@ public class MorseCodeModule extends ModuleBase {
     AnchorPane.setBottomAnchor(moduleBox, 55.0);
     AnchorPane.setLeftAnchor(submit, 86.5);
     AnchorPane.setBottomAnchor(submit, 15.0);
-    
+
     box.getChildren().addAll(leftWire, leftCap, leftHolder, light, rightHolder, rightCap, rightWire, submit, moduleBox);
     this.getChildren().add(box);
   }
@@ -269,5 +265,5 @@ public class MorseCodeModule extends ModuleBase {
   public void pause() {
     light.flasher.stop();
   }
-  
+
 }

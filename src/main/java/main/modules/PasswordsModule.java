@@ -17,7 +17,6 @@ import javafx.scene.text.Text;
 import main.Bomb;
 
 public class PasswordsModule extends ModuleBase {
-  private final static Random rand = new Random();
   private final static String[] passwords = {"about", "after", "again", "below", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "plant", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "water", "where", "which", "world", "would", "write"};
   private final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
@@ -64,7 +63,6 @@ public class PasswordsModule extends ModuleBase {
   }
 
   private class Pass extends Button {
-
     private Pass() {
       super();
 
@@ -77,19 +75,21 @@ public class PasswordsModule extends ModuleBase {
     }
   }
 
-  public PasswordsModule(Bomb bomb) {
+  public PasswordsModule(Bomb bomb, Random rand) {
     super("Passwords", bomb);
-    initPasswords();
+    do {
+      initPasswords(rand);
+    } while (!checkSolvable());
     initGUI();
   }
   
-  private void initPasswords() {
+  private void initPasswords(Random rand) {
     String word = passwords[rand.nextInt(passwords.length)];
 
     for (int i = 0; i < slots.length; i++) {
       String alphabet = PasswordsModule.alphabet;
       
-      Character ans = word.toCharArray()[i];
+      char ans = word.toCharArray()[i];
       slots[i][rand.nextInt(6)] = ans;
       int index = alphabet.indexOf(ans);
       alphabet = alphabet.substring(0, index) + alphabet.substring(index+1);
@@ -102,11 +102,6 @@ public class PasswordsModule extends ModuleBase {
         }
       }
     }
-    if (!checkSolvable()) {
-      initPasswords();
-    }
-
-
   }
 
   private boolean checkSolvable() { //FIXME unoptimal as hell

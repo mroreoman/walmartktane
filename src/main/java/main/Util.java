@@ -17,8 +17,6 @@ import javafx.geometry.Insets;
 import javafx.util.converter.NumberStringConverter;
 
 public final class Util {
-    private final static Random rand = new Random();
-
     public static Background simpleBackground(Color color) {
         return new Background(new BackgroundFill(color, null, null));
     }
@@ -36,7 +34,7 @@ public final class Util {
         return newArr;
     }
 
-    public static int[] goodUniqueIndexes(int length, int num) {
+    public static int[] goodUniqueIndexes(Random rand, int length, int num) {
         int[] arr = new int[length];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
@@ -50,7 +48,7 @@ public final class Util {
         return indexes;
     }
 
-    public static int[] randomUniqueIndexes(int[] oldArr, int num) {
+    public static int[] randomUniqueIndexes(Random rand, int[] oldArr, int num) {
         int[] newArr = new int[num];
         int i = 0;
         while (i < num) {

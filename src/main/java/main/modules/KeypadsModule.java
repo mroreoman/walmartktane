@@ -26,8 +26,6 @@ public class KeypadsModule extends ModuleBase {
   private static final String[] COLUMN6 = {"keypad_symbols/11-six.png", "keypad_symbols/16-euro.png", "keypad_symbols/27-tracks.png", "keypad_symbols/14-ae.png", "keypad_symbols/24-pitchfork.png", "keypad_symbols/18-nwithhat.png", "keypad_symbols/6-omega.png"};
   private static final String[][] SYMBOLS = {COLUMN1, COLUMN2, COLUMN3, COLUMN4, COLUMN5, COLUMN6};
   
-  private static final Random rand = new Random();
-  
   private Keypad[] keypads = new Keypad[4];
   private int column;
   private int press = 0;
@@ -76,15 +74,15 @@ public class KeypadsModule extends ModuleBase {
     }
   }
 
-  public KeypadsModule(Bomb bomb) {
+  public KeypadsModule(Bomb bomb, Random rand) {
     super("Keypads", bomb);
-    initKeypads();
+    initKeypads(rand);
     initGUI();
   }
 
-  private void initKeypads() {
+  private void initKeypads(Random rand) {
     column = rand.nextInt(6);
-    int[] indexes = Util.randomUniqueIndexes(Util.intAsArray(7), 4);
+    int[] indexes = Util.randomUniqueIndexes(rand, Util.intAsArray(7), 4);
     for (int i = 0; i < 4; i++) {
       keypads[i] = new Keypad(column, indexes[i]);
     }
@@ -121,7 +119,7 @@ public class KeypadsModule extends ModuleBase {
     this.getChildren().add(box);
   }
 
-  public void disable(){
+  public void disable() {
     for (Keypad keypad: keypads){
       keypad.buton.setDisable(true);
     }

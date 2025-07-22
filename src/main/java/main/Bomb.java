@@ -1,6 +1,5 @@
 package main;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import javafx.geometry.HPos;
@@ -20,29 +19,23 @@ import javafx.scene.layout.VBox;
 import main.modules.*;
 import main.widgets.Edgework;
 
-//TODO not going to split bomb into MVC yet, just restructure to have all three components available to other classes
-//  - make state field observable so bomb buttons can respond to changes
 public class Bomb {
-  public static final List<Class<? extends ModuleBase>> allModules = List.of(WiresModule.class, TheButtonModule.class, KeypadsModule.class, SimonSaysModule.class, WhosOnFirstModule.class, MemoryModule.class, MorseCodeModule.class, ComplicatedWiresModule.class, WireSequencesModule.class, MazesModule.class, PasswordsModule.class);
-
-//  private static final Random rand = new Random();
   public enum State { RUNNING, EXPLODED, DEFUSED }
 
   private final GridPane root;
-  private final Random rand;
   private final Edgework edgework;
   private final Timer timer;
   private final Map<ModuleBase, Button> modules;
   private State state;
   private Pane currentModule;
-  private final Runnable bombExitAction;
   private final String name;
+  private final Runnable bombExitAction;
 
   public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, Runnable bombExitAction, String name) {
-    this(rand, numModules, startTimeSecs, maxStrikes, allModules, bombExitAction, name);
+    this(rand, numModules, startTimeSecs, maxStrikes, List.of(ModuleBase.Module.values()), bombExitAction, name);
   }
 
-  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> availableModules, Runnable bombExitAction, String name) {
+  public Bomb(Random rand, int numModules, int startTimeSecs, int maxStrikes, List<ModuleBase.Module> availableModules, Runnable bombExitAction, String name) {
     this(rand, startTimeSecs, maxStrikes, generateModuleList(rand, numModules, availableModules), bombExitAction, name);
   }
 
@@ -50,15 +43,14 @@ public class Bomb {
    * Creates a bomb with the specified modules
    * @param moduleList list of modules in the order that they should be added to the bomb
    */
-  public Bomb(Random rand, int startTimeSecs, int maxStrikes, List<Class<? extends ModuleBase>> moduleList, Runnable bombExitAction, String name) {
+  public Bomb(Random rand, int startTimeSecs, int maxStrikes, List<ModuleBase.Module> moduleList, Runnable bombExitAction, String name) {
     root = new GridPane();
-    this.rand = rand;
     edgework = new Edgework(rand);
     timer = new Timer(maxStrikes, startTimeSecs);
     modules = new LinkedHashMap<>();
-    this.bombExitAction = bombExitAction;
     this.name = name;
-    initModules(moduleList);
+    this.bombExitAction = bombExitAction;
+    initModules(moduleList, rand);
     initGUI();
 
     root.addEventHandler(ModuleEvent.SOLVE, e -> checkDefused(e.getModule()));
@@ -83,29 +75,25 @@ public class Bomb {
     return root;
   }
 
-  private static List<Class<? extends ModuleBase>> generateModuleList(Random rand, int numModules, List<Class<? extends ModuleBase>> availableModules) {
-    List<Class<? extends ModuleBase>> moduleList = new ArrayList<>();
+  private static List<ModuleBase.Module> generateModuleList(Random rand, int numModules, List<ModuleBase.Module> availableModules) {
+    List<ModuleBase.Module> moduleList = new ArrayList<>();
     for (int i = 0; i < numModules; i++) {
       moduleList.add(availableModules.get(rand.nextInt(availableModules.size())));
     }
     return moduleList;
   }
 
-  private void initModules(List<Class<? extends ModuleBase>> moduleList) {
-    if (moduleList == null || moduleList.isEmpty()) {
-      throw new IllegalArgumentException("Module types cannot be null or empty");
+  private void initModules(List<ModuleBase.Module> moduleList, Random rand) {
+    if (moduleList.isEmpty()) {
+      throw new IllegalArgumentException("Module types cannot empty");
     }
 
-    for (Class<? extends ModuleBase> moduleType : moduleList) {
-      try {
-        ModuleBase module = moduleType.getConstructor(Bomb.class).newInstance(this);
-        Button buton = new Button(module.toString());
-        buton.setOnAction(event -> setCurrentModule(module));
-        buton.setFont(Util.bodyFont(15));
-        modules.put(module, buton);
-      } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-        throw new RuntimeException("Bomb could not instantiate " + moduleType.getName(), e);
-      }
+    for (ModuleBase.Module moduleType : moduleList) {
+      ModuleBase module = moduleType.instantiate(this, rand);
+      Button buton = new Button(module.toString());
+      buton.setOnAction(event -> setCurrentModule(module));
+      buton.setFont(Util.bodyFont(15));
+      modules.put(module, buton);
     }
   }
 
@@ -184,10 +172,6 @@ public class Bomb {
 
   public State getState() {
     return state;
-  }
-
-  public Random getRandom() {
-    return rand;
   }
 
   public Edgework getEdgework() {
