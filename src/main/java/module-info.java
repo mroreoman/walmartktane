@@ -1,6 +1,5 @@
-module main {
+module walmartktane {
     requires transitive javafx.controls;
-    exports main;
-    exports main.modules;
-    exports main.widgets;
+
+    exports com.github.mroreoman;
 }

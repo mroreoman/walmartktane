@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>main</groupId>
+    <groupId>com.github.mroreoman</groupId>
     <artifactId>walmartktane</artifactId>
-    <version>1.0.0</version>
+    <version>0.2.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
@@ -30,7 +29,7 @@
                     <launcher>walmartktane</launcher>
                     <jlinkImageName>walmartktane</jlinkImageName>
                     <jlinkZipName>walmartktane</jlinkZipName>
-                    <mainClass>main/main.KTANE</mainClass>
+                    <mainClass>walmartktane/com.github.mroreoman.KTANE</mainClass>
                 </configuration>
             </plugin>
         </plugins>
