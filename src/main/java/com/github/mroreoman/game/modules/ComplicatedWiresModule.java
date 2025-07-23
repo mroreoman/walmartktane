@@ -22,7 +22,7 @@ import com.github.mroreoman.Util;
 import com.github.mroreoman.game.Bomb;
 
 public class ComplicatedWiresModule extends ModuleBase {
-    public static final String NAME = "Wires";
+    public static final String NAME = "Complicated Wires";
     private static final Color[] COLORS = {Color.WHITE, Color.RED, Color.BLUE};
 
     private final ComplicatedWire[] wires = new ComplicatedWire[6];
