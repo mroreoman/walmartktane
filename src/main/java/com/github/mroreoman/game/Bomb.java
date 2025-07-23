@@ -161,13 +161,19 @@ public class Bomb {
 
     private void checkDefused(ModuleBase currentModule) {
         modules.get(currentModule).setText(currentModule.toString());
-        boolean defused = true;
-        for (ModuleBase module : modules.keySet()) {
-            defused &= module.isSolved();
-        }
-        if (defused) {
+        if (modulesSolved() == modules.size()) {
             BombEvent.fireEvent(timer, new BombEvent(BombEvent.DEFUSE));
         }
+    }
+
+    private int modulesSolved() {
+        int count = 0;
+        for (ModuleBase module : modules.keySet()) {
+            if (module.isSolved()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void setCurrentModule(ModuleBase module) {
@@ -188,7 +194,7 @@ public class Bomb {
     }
 
     public String toString() {
-        return name + (state != State.RUNNING ? " - " + state : "");
+        return String.format("%s - %s (%s, %d/%d)", name, state, timer.formattedTime(), modulesSolved(), modules.size());
     }
 
 }
