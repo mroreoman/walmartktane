@@ -40,7 +40,7 @@ public final class Util {
      * Generates an array of random indexes for an array of a specified length
      * 
      * @param rand the random to be used
-     * @param length length of the orginal array of indexes
+     * @param length length of the original array of indexes
      * @param num amount of indexes to be chosen
      */
     public static int[] goodUniqueIndexes(Random rand, int length, int num) {

@@ -27,13 +27,9 @@ public class MenuController {
         return viewBuilder.build();
     }
 
-    public void saveData() {
-        //TODO save bomb history & story mode progress
-        //  - would also need to load data somewhere
-    }
+    public void saveData() {}
 
     private void newBomb(Bomb b) {
-//        model.addBomb(b);
         model.setCurrentBomb(b);
     }
 

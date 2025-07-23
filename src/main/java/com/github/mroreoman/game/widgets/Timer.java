@@ -71,7 +71,7 @@ public class Timer extends BorderPane {
 
     private void incrementTime() {
         timeSecs.set(timeSecs.get() - 1);
-        timerText.setText(formattedTime()); //updateBombText();
+        timerText.setText(formattedTime());
 
         if (timeSecs.get() == 0) {
             fireEvent(new BombEvent(BombEvent.EXPLODE));
