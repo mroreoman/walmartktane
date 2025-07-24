@@ -79,6 +79,7 @@ public class WireSequencesModule extends ModuleBase {
                 if (wire.isCorrect) {
                     if (!wire.isCut) {
                         submit(false);
+                        return;
                     }
                 }
             }
