@@ -10,7 +10,7 @@ public class MenuController {
 
     public MenuController() {
         model = new MenuModel();
-        viewBuilder = new BaseView(model, this::newBomb);
+        viewBuilder = new BaseView(model);
 
         model.currentBombProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -28,9 +28,5 @@ public class MenuController {
     }
 
     public void saveData() {}
-
-    private void newBomb(Bomb b) {
-        model.setCurrentBomb(b);
-    }
 
 }

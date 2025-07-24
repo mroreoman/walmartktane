@@ -1,7 +1,5 @@
 package com.github.mroreoman.menu;
 
-import java.util.function.Consumer;
-
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -11,19 +9,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
 
-import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.game.StoryModeBomb;
 import com.github.mroreoman.Util;
 
 public class StoryModeView implements Builder<Region> {
     private final MenuModel model;
-    private final Consumer<Bomb> newBomb;
     private final Runnable setViewMainMenu;
     private final Runnable bombExitAction;
 
-    public StoryModeView(MenuModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu, Runnable bombExitAction) {
+    public StoryModeView(MenuModel model, Runnable setViewMainMenu, Runnable bombExitAction) {
         this.model = model;
-        this.newBomb = newBomb;
         this.setViewMainMenu = setViewMainMenu;
         this.bombExitAction = bombExitAction;
     }
@@ -78,7 +73,7 @@ public class StoryModeView implements Builder<Region> {
 
     private Button createStoryModeButton(StoryModeBomb bomb) {
         Button button = new Button(bomb.name());
-        button.setOnAction(event -> newBomb.accept(bomb.instantiate(bombExitAction)));
+        button.setOnAction(event -> model.setCurrentBomb(bomb.instantiate(bombExitAction)));
         return button;
     }
 

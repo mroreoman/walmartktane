@@ -2,7 +2,6 @@ package com.github.mroreoman.menu;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.geometry.Pos;
@@ -21,13 +20,11 @@ import com.github.mroreoman.Util;
 
 public class BombCreationView implements Builder<Region> {
     private final MenuModel model;
-    private final Consumer<Bomb> newBomb;
     private final Runnable setViewMainMenu;
     private final Runnable bombExitAction;
 
-    public BombCreationView(MenuModel model, Consumer<Bomb> newBomb, Runnable setViewMainMenu, Runnable bombExitAction) {
+    public BombCreationView(MenuModel model, Runnable setViewMainMenu, Runnable bombExitAction) {
         this.model = model;
-        this.newBomb = newBomb;
         this.setViewMainMenu = setViewMainMenu;
         this.bombExitAction = bombExitAction;
     }
@@ -141,7 +138,7 @@ public class BombCreationView implements Builder<Region> {
                     bombExitAction,
                     "Custom"
             );
-            newBomb.accept(b);
+            model.setCurrentBomb(b);
         });
         Button back = new Button("Back");
         back.setOnAction(event -> setViewMainMenu.run());

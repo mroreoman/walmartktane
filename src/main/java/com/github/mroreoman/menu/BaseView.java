@@ -1,20 +1,14 @@
 package com.github.mroreoman.menu;
 
-import java.util.function.Consumer;
-
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.util.Builder;
 
-import com.github.mroreoman.game.Bomb;
-
 public class BaseView implements Builder<Region> {
     private final MenuModel model;
-    private final Consumer<Bomb> newBomb;
 
-    public BaseView(MenuModel model, Consumer<Bomb> newBomb) {
+    public BaseView(MenuModel model) {
         this.model = model;
-        this.newBomb = newBomb;
     }
 
     @Override
@@ -28,13 +22,11 @@ public class BaseView implements Builder<Region> {
 
         Region storyMode = new StoryModeView(
                 model,
-                newBomb,
                 () -> model.menuPageProperty().set(0),
                 bombExitAction
         ).build();
         Region bombCreation = new BombCreationView(
                 model,
-                newBomb,
                 () -> model.menuPageProperty().set(0),
                 bombExitAction
         ).build();
@@ -42,7 +34,6 @@ public class BaseView implements Builder<Region> {
                 model,
                 () -> model.menuPageProperty().set(1),
                 () -> model.menuPageProperty().set(2),
-                newBomb,
                 bombExitAction
         ).build();
         root.getChildren().add(mainMenu);

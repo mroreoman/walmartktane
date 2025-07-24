@@ -1,7 +1,6 @@
 package com.github.mroreoman.menu;
 
 import java.util.Random;
-import java.util.function.Consumer;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -15,21 +14,20 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Builder;
-import com.github.mroreoman.game.Bomb;
+
 import com.github.mroreoman.Util;
+import com.github.mroreoman.game.Bomb;
 
 public class MainMenuView implements Builder<Region> {
     private final MenuModel model;
     private final Runnable setViewStoryMode;
     private final Runnable setViewBombCreation;
-    private final Consumer<Bomb> newBomb;
     private final Runnable bombExitAction;
 
-    public MainMenuView(MenuModel model, Runnable setViewStoryMode, Runnable setViewBombCreation, Consumer<Bomb> newBomb, Runnable bombExitAction) {
+    public MainMenuView(MenuModel model, Runnable setViewStoryMode, Runnable setViewBombCreation,Runnable bombExitAction) {
         this.model = model;
         this.setViewStoryMode = setViewStoryMode;
         this.setViewBombCreation = setViewBombCreation;
-        this.newBomb = newBomb;
         this.bombExitAction = bombExitAction;
     }
 
@@ -61,7 +59,7 @@ public class MainMenuView implements Builder<Region> {
 
         Button quickPlayButton = new Button("Quick play");
         quickPlayButton.setFont(Util.bodyFont(25));
-        quickPlayButton.setOnAction(e -> newBomb.accept(new Bomb(new Random(), 5, 300, 3, bombExitAction, "Quick Play")));
+        quickPlayButton.setOnAction(e -> model.setCurrentBomb(new Bomb(new Random(), 5, 300, 3, bombExitAction, "Quick Play")));
 
         Button exit = new Button("Exit");
         exit.setFont(Util.bodyFont(25));
