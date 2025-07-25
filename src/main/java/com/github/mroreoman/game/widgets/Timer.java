@@ -63,7 +63,7 @@ public class Timer extends BorderPane {
 
     private void tick() {
         tick++;
-        if (tick >= strikesRemaining.get() + 1) {
+        if ((tick + Math.min(getStrikes(), 2)) >= 4) {
             incrementTime();
             tick = 0;
         }
