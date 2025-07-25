@@ -16,7 +16,6 @@ public class MenuController {
     private final BaseView viewBuilder;
 
     public MenuController() {
-        System.out.println(JsonObject.EMPTY_JSON_OBJECT);
         model = new MenuModel(loadData());
         viewBuilder = new BaseView(model);
 

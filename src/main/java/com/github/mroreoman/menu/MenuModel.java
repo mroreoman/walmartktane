@@ -6,6 +6,7 @@ import java.util.Map;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -26,15 +27,14 @@ public class MenuModel {
     private final ListProperty<ModuleBase.Module> bombCreationModuleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty bombCreationSeeded = new SimpleBooleanProperty(false);
     private final IntegerProperty bombCreationSeed = new SimpleIntegerProperty();
-    private final Map<String, StoryModeBombProgress> storyModeProgress; //TODO update data
+    private final Map<String, StoryModeBombProgress> storyModeProgress;
 
     public MenuModel(JsonObject saveData) {
         storyModeProgress = new LinkedHashMap<>();
         for (List<StoryModeBomb> chapter : StoryModeBomb.ALL_CHAPTERS) {
             for (StoryModeBomb bomb : chapter) {
-                if (saveData.getJsonObject(bomb.name()) == null) {
-                    System.out.println("No data found for " + bomb.name());
-                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(bomb));
+                if (saveData == JsonObject.EMPTY_JSON_OBJECT || saveData.isNull(bomb.name())) {
+                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(null));
                 } else {
                     storyModeProgress.put(bomb.name(), new StoryModeBombProgress(saveData.getJsonObject(bomb.name())));
                 }
@@ -47,8 +47,15 @@ public class MenuModel {
     }
 
     public void addBomb(Bomb bomb) {
-        if (!bombHistory.contains(bomb))
+        if (!bombHistory.contains(bomb)) {
             bombHistory.add(bomb);
+            if (storyModeProgress.containsKey(bomb.getName()) && bomb.getState() == Bomb.State.DEFUSED) {
+                StoryModeBombProgress solve = new StoryModeBombProgress(bomb.getTimeRemaining(), bomb.getStrikes());
+                if (solve.compareTo(storyModeProgress.get(bomb.getName())) > 0) {
+                    storyModeProgress.put(bomb.getName(), solve);
+                }                
+            }
+        }
     }
 
     public ObjectProperty<Bomb> currentBombProperty() {
@@ -125,28 +132,40 @@ public class MenuModel {
         return builder.build();
     }
 
-    private static class StoryModeBombProgress {
+    private static class StoryModeBombProgress implements Comparable<StoryModeBombProgress> {
         int timeRemaining;
-        int strikesRemaining;
-        int modulesRemaining;
+        int strikes;
+        boolean isNull = false;
 
         StoryModeBombProgress(JsonObject saveData) {
-            strikesRemaining = saveData.getJsonNumber("strikesRemaining").intValue();
-            timeRemaining = saveData.getJsonNumber("timeRemaining").intValue();
-            modulesRemaining = saveData.getJsonNumber("modulesRemaining").intValue();
+            if (saveData == null) {
+                isNull = true;
+            } else {
+                strikes = saveData.getJsonNumber("strikes").intValue();
+                timeRemaining = saveData.getJsonNumber("timeRemaining").intValue();
+            }
         }
 
-        StoryModeBombProgress(StoryModeBomb bomb) {
-            strikesRemaining = bomb.maxStrikes();
-            timeRemaining = bomb.startTimeSecs();
-            modulesRemaining = bomb.requiredModules().size() + bomb.pools().size();
+        StoryModeBombProgress(int timeRemaining, int strikes) {
+            this.timeRemaining = timeRemaining;
+            this.strikes = strikes;
         }
 
-        JsonObject toJson() {
+        public int compareTo(StoryModeBombProgress o) {
+             if (timeRemaining == o.timeRemaining) {
+                return o.strikes - strikes;
+             } else {
+                return timeRemaining - o.timeRemaining;
+             }
+        }
+
+        JsonValue toJson() {
+            if (isNull) {
+                return JsonObject.NULL;
+            }
             return Json.createObjectBuilder()
-                    .add("strikesRemaining", strikesRemaining)
+                    .add("strikes", strikes)
                     .add("timeRemaining", timeRemaining)
-                    .add("modulesRemaining", modulesRemaining)
                     .build();
         }
     }

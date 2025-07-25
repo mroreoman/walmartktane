@@ -181,6 +181,10 @@ public class Bomb {
         currentModule.getChildren().add(module);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public State getState() {
         return state;
     }
@@ -191,6 +195,14 @@ public class Bomb {
 
     public Timer getTimer() {
         return timer;
+    }
+
+    public int getTimeRemaining() {
+        return timer.timeSecs.get();
+    }
+
+    public int getStrikes() {
+        return timer.getStrikes();
     }
 
     public String toString() {
