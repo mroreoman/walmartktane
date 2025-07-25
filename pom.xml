@@ -41,7 +41,6 @@
                     <noManPages>true</noManPages>
                     <launcher>walmartktane</launcher>
                     <jlinkImageName>walmartktane</jlinkImageName>
-<!--                    <jlinkZipName>walmartktane</jlinkZipName>--> <!--TODO uncomment to make zip-->
                     <mainClass>walmartktane/com.github.mroreoman.KTANE</mainClass>
                 </configuration>
             </plugin>

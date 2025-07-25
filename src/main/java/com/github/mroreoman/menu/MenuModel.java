@@ -1,16 +1,21 @@
 package com.github.mroreoman.menu;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import com.github.mroreoman.game.Bomb;
+import com.github.mroreoman.game.StoryModeBomb;
 import com.github.mroreoman.game.modules.ModuleBase;
 
 public class MenuModel {
-
     private final ListProperty<Bomb> bombHistory = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<Bomb> currentBomb = new SimpleObjectProperty<>();
     private final IntegerProperty menuPage = new SimpleIntegerProperty(0);
@@ -21,10 +26,20 @@ public class MenuModel {
     private final ListProperty<ModuleBase.Module> bombCreationModuleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty bombCreationSeeded = new SimpleBooleanProperty(false);
     private final IntegerProperty bombCreationSeed = new SimpleIntegerProperty();
-    private final JsonObject saveData;
+    private final Map<String, StoryModeBombProgress> storyModeProgress; //TODO update data
 
-    public MenuModel (JsonObject saveData) {
-        this.saveData = saveData;
+    public MenuModel(JsonObject saveData) {
+        storyModeProgress = new LinkedHashMap<>();
+        for (List<StoryModeBomb> chapter : StoryModeBomb.ALL_CHAPTERS) {
+            for (StoryModeBomb bomb : chapter) {
+                if (saveData.getJsonObject(bomb.name()) == null) {
+                    System.out.println("No data found for " + bomb.name());
+                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(bomb));
+                } else {
+                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(saveData.getJsonObject(bomb.name())));
+                }
+            }
+        }
     }
 
     public ListProperty<Bomb> bombHistoryProperty() {
@@ -104,7 +119,35 @@ public class MenuModel {
         return bombCreationSeed.get();
     }
 
-    public JsonObject getSaveData() { //TODO generate actual data
-        return saveData;
+    public JsonObject getSaveData() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        storyModeProgress.forEach((k, v) -> builder.add(k, v.toJson()));
+        return builder.build();
+    }
+
+    private static class StoryModeBombProgress {
+        int timeRemaining;
+        int strikesRemaining;
+        int modulesRemaining;
+
+        StoryModeBombProgress(JsonObject saveData) {
+            strikesRemaining = saveData.getJsonNumber("strikesRemaining").intValue();
+            timeRemaining = saveData.getJsonNumber("timeRemaining").intValue();
+            modulesRemaining = saveData.getJsonNumber("modulesRemaining").intValue();
+        }
+
+        StoryModeBombProgress(StoryModeBomb bomb) {
+            strikesRemaining = bomb.maxStrikes();
+            timeRemaining = bomb.startTimeSecs();
+            modulesRemaining = bomb.requiredModules().size() + bomb.pools().size();
+        }
+
+        JsonObject toJson() {
+            return Json.createObjectBuilder()
+                    .add("strikesRemaining", strikesRemaining)
+                    .add("timeRemaining", timeRemaining)
+                    .add("modulesRemaining", modulesRemaining)
+                    .build();
+        }
     }
 }

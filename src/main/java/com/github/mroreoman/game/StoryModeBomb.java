@@ -6,8 +6,7 @@ import java.util.Random;
 
 import com.github.mroreoman.game.modules.ModuleBase.Module;
 
-public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List<Module> requiredModules,
-                            List<Pool> pools) {
+public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List<Module> requiredModules, List<Pool> pools) {
     public Bomb instantiate(Runnable bombExitAction) {
         List<Module> moduleList = new ArrayList<>(pools.size());
         moduleList.addAll(requiredModules);
@@ -18,7 +17,7 @@ public record StoryModeBomb(String name, int startTimeSecs, int maxStrikes, List
     }
 
     private record Pool(int count, List<Module> modulePool) {
-        private static final Random rand = new Random();
+        private static final Random rand = new Random(); //FIXME implement universal rng here
 
         private List<Module> getModuleList() {
             List<Module> moduleList = new ArrayList<>(count);
