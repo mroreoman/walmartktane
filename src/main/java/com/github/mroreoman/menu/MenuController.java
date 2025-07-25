@@ -5,8 +5,9 @@ import java.io.*;
 import javafx.scene.layout.Region;
 
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import jakarta.json.JsonStructure;
+// import jakarta.json.JsonStructure;
 import jakarta.json.JsonWriter;
 
 import com.github.mroreoman.game.Bomb;
@@ -19,12 +20,9 @@ public class MenuController {
     private final BaseView viewBuilder;
 
     public MenuController() {
-        System.out.println(loadData()); //TODO do something with data
-        System.out.println(data.getAbsolutePath());
-        // System.out.println(data.getPath());
-        // System.out.println(saveData);
-        // System.out.println(mydata.getAbsolutePath());
-        model = new MenuModel();
+        // System.out.println(loadData()); //TODO do something with data
+        // System.out.println(data.getAbsolutePath());
+        model = new MenuModel(loadData());
         viewBuilder = new BaseView(model);
 
         model.currentBombProperty().addListener((observable, oldValue, newValue) -> {
@@ -42,7 +40,18 @@ public class MenuController {
         return viewBuilder.build();
     }
 
-    private JsonStructure loadData() {
+    private JsonObject loadData() {
+        if (!data.isFile()) {
+            return null;
+        }
+        try (JsonReader reader = Json.createReader(new FileReader(data))) {
+            return (JsonObject)reader.read();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Could not open file " + data.getAbsolutePath());
+        }
+    }
+
+    public void storeData() {
         if (!data.getParentFile().isDirectory()) { // use this one to create data locally
             if (!data.getParentFile().mkdir()) {
                 throw new RuntimeException("Could not create directory " + data.getParentFile().getAbsolutePath());
@@ -67,13 +76,6 @@ public class MenuController {
             try {
                 if (!data.createNewFile()) {
                     throw new IOException();
-                } else {
-                    JsonWriter writer = Json.createWriter(new FileWriter(data));
-                    writer.write(Json.createObjectBuilder()
-                        .add("test", "start")
-                        .add("The First Bomb", "false")
-                        .build()); //TODO replace with blank data?
-                    writer.close();
                 }
             } catch (IOException e) {
                 throw new RuntimeException("Could not create file " + data.getParentFile().getAbsolutePath());
@@ -81,17 +83,9 @@ public class MenuController {
         }
         assert data.isFile();
 
-        try (JsonReader reader = Json.createReader(new FileReader(data))) {
-            return reader.read();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Could not open file " + data.getAbsolutePath());
-        }
-    }
-
-    public void saveData() {
         try {
-            JsonWriter writer = Json.createWriter(new FileWriter(data, true));
-            writer.write(Json.createObjectBuilder().add("test", "done").build()); //TODO save actual data // this writes a brand new file
+            JsonWriter writer = Json.createWriter(new FileWriter(data));
+            writer.writeObject(model.getSaveData());
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

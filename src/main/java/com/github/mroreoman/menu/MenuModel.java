@@ -1,5 +1,7 @@
 package com.github.mroreoman.menu;
 
+import jakarta.json.JsonObject;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,6 +10,7 @@ import com.github.mroreoman.game.Bomb;
 import com.github.mroreoman.game.modules.ModuleBase;
 
 public class MenuModel {
+
     private final ListProperty<Bomb> bombHistory = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<Bomb> currentBomb = new SimpleObjectProperty<>();
     private final IntegerProperty menuPage = new SimpleIntegerProperty(0);
@@ -18,6 +21,11 @@ public class MenuModel {
     private final ListProperty<ModuleBase.Module> bombCreationModuleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty bombCreationSeeded = new SimpleBooleanProperty(false);
     private final IntegerProperty bombCreationSeed = new SimpleIntegerProperty();
+    private final JsonObject saveData;
+
+    public MenuModel (JsonObject saveData) {
+        this.saveData = saveData;
+    }
 
     public ListProperty<Bomb> bombHistoryProperty() {
         return bombHistory;
@@ -94,5 +102,9 @@ public class MenuModel {
 
     public int getBombCreationSeed() {
         return bombCreationSeed.get();
+    }
+
+    public JsonObject getSaveData() { //TODO generate actual data
+        return saveData;
     }
 }

@@ -33,7 +33,7 @@ public class KTANE extends Application {
 
     @Override
     public void stop() {
-        controller.saveData();
+        controller.storeData();
     }
 
 }
