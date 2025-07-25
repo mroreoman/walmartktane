@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -109,6 +110,7 @@ public class Bomb {
         moduleButtonsBox.getChildren().addAll(modules.values());
         ScrollPane moduleButtonsScroll = new ScrollPane(moduleButtonsBox);
         moduleButtonsScroll.setPrefHeight(50);
+        moduleButtonsScroll.setBackground(Background.EMPTY);
 
         Button exitButton = new Button("exit");
         exitButton.setOnAction(event -> exit());
@@ -127,11 +129,11 @@ public class Bomb {
         root.setVgap(10);
 
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(25);
+        col1.setPercentWidth(30);
         ColumnConstraints col2 = new ColumnConstraints();
         col2.setPercentWidth(50);
         ColumnConstraints col3 = new ColumnConstraints();
-        col3.setPercentWidth(25);
+        col3.setPercentWidth(20);
         root.getColumnConstraints().addAll(col1, col2, col3);
 
         RowConstraints row1 = new RowConstraints();
