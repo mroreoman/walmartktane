@@ -12,12 +12,18 @@ import jakarta.json.JsonWriter;
 import com.github.mroreoman.game.Bomb;
 
 public class MenuController {
-    private final File data = new File("../data/test.json");
+    private final File data = new File("../data/test.json"); // use this for local
+    // private String localAppData = System.getenv("LOCALAPPDATA");
+    // private final File data = new File(localAppData+"/WalmartKTANE/data/test.json"); // use this and localAppData for AppData
     private final MenuModel model;
     private final BaseView viewBuilder;
 
     public MenuController() {
         System.out.println(loadData()); //TODO do something with data
+        System.out.println(data.getAbsolutePath());
+        // System.out.println(data.getPath());
+        // System.out.println(saveData);
+        // System.out.println(mydata.getAbsolutePath());
         model = new MenuModel();
         viewBuilder = new BaseView(model);
 
@@ -37,11 +43,24 @@ public class MenuController {
     }
 
     private JsonStructure loadData() {
-        if (!data.getParentFile().isDirectory()) {
+        if (!data.getParentFile().isDirectory()) { // use this one to create data locally
             if (!data.getParentFile().mkdir()) {
                 throw new RuntimeException("Could not create directory " + data.getParentFile().getAbsolutePath());
             }
         }
+
+        // if (!data.getParentFile().isDirectory()) { // use this one to create data in AppData
+        //     if (!data.getParentFile().getParentFile().isDirectory()) {
+        //         if (!data.getParentFile().getParentFile().mkdir()) {
+        //             throw new RuntimeException("Could not create directory " + data.getParentFile().getParentFile().getAbsolutePath());
+        //         }
+        //         if (!data.getParentFile().mkdir()) {
+        //             throw new RuntimeException("Could not create directory " + data.getParentFile().getAbsolutePath());
+        //         }
+        //     } else if (!data.getParentFile().mkdir()) {
+        //         throw new RuntimeException("Could not create directory " + data.getParentFile().getAbsolutePath());
+        //     }
+        // }
         assert data.getParentFile().isDirectory();
 
         if (!data.isFile()) {
@@ -50,7 +69,10 @@ public class MenuController {
                     throw new IOException();
                 } else {
                     JsonWriter writer = Json.createWriter(new FileWriter(data));
-                    writer.write(Json.createObjectBuilder().add("test", "start").build()); //TODO replace with blank data?
+                    writer.write(Json.createObjectBuilder()
+                        .add("test", "start")
+                        .add("The First Bomb", "false")
+                        .build()); //TODO replace with blank data?
                     writer.close();
                 }
             } catch (IOException e) {
@@ -68,8 +90,8 @@ public class MenuController {
 
     public void saveData() {
         try {
-            JsonWriter writer = Json.createWriter(new FileWriter(data));
-            writer.write(Json.createObjectBuilder().add("test", "done").build()); //TODO save actual data
+            JsonWriter writer = Json.createWriter(new FileWriter(data, true));
+            writer.write(Json.createObjectBuilder().add("test", "done").build()); //TODO save actual data // this writes a brand new file
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
