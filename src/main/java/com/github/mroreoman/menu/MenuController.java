@@ -5,6 +5,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonWriter;
+import jakarta.json.stream.JsonParsingException;
 
 import javafx.scene.layout.Region;
 
@@ -42,6 +43,8 @@ public class MenuController {
             return reader.readObject();
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Could not open file " + data.getAbsolutePath());
+        } catch (JsonParsingException e) {
+            throw new RuntimeException("Could not parse file " + data.getAbsolutePath()); //TODO ask player if they want to close game & fix the file or continue playing and overwrite
         }
     }
 

@@ -140,9 +140,11 @@ public class MenuModel {
         StoryModeBombProgress(JsonObject saveData) {
             if (saveData == null) {
                 isNull = true;
+            } else if (!saveData.containsKey("strikes") || !saveData.containsKey("timeRemaining")) {
+                throw new RuntimeException("Invalid save data"); //TODO ask player if they want to close game & fix the file or continue playing & overwrite the file
             } else {
-                strikes = saveData.getJsonNumber("strikes").intValue();
-                timeRemaining = saveData.getJsonNumber("timeRemaining").intValue();
+                strikes = saveData.getInt("strikes");
+                timeRemaining = saveData.getInt("timeRemaining");
             }
         }
 
