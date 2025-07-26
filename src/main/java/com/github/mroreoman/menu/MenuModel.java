@@ -27,16 +27,16 @@ public class MenuModel {
     private final ListProperty<ModuleBase.Module> bombCreationModuleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty bombCreationSeeded = new SimpleBooleanProperty(false);
     private final IntegerProperty bombCreationSeed = new SimpleIntegerProperty();
-    private final Map<String, StoryModeBombProgress> storyModeProgress;
+    private final Map<String, ObjectProperty<StoryModeBombProgress>> storyModeProgress;
 
     public MenuModel(JsonObject saveData) {
         storyModeProgress = new LinkedHashMap<>();
         for (List<StoryModeBomb> chapter : StoryModeBomb.ALL_CHAPTERS) {
             for (StoryModeBomb bomb : chapter) {
                 if (saveData == JsonObject.EMPTY_JSON_OBJECT || saveData.isNull(bomb.name())) {
-                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(null));
+                    storyModeProgress.put(bomb.name(), new SimpleObjectProperty<>(new StoryModeBombProgress(null)));
                 } else {
-                    storyModeProgress.put(bomb.name(), new StoryModeBombProgress(saveData.getJsonObject(bomb.name())));
+                    storyModeProgress.put(bomb.name(), new SimpleObjectProperty<>(new StoryModeBombProgress(saveData.getJsonObject(bomb.name()))));
                 }
             }
         }
@@ -51,9 +51,9 @@ public class MenuModel {
             bombHistory.add(bomb);
             if (storyModeProgress.containsKey(bomb.getName()) && bomb.getState() == Bomb.State.DEFUSED) {
                 StoryModeBombProgress solve = new StoryModeBombProgress(bomb.getTimeRemaining(), bomb.getStrikes());
-                if (solve.compareTo(storyModeProgress.get(bomb.getName())) > 0) {
-                    storyModeProgress.put(bomb.getName(), solve);
-                }                
+                if (solve.compareTo(storyModeProgress.get(bomb.getName()).get()) > 0) {
+                    storyModeProgress.get(bomb.getName()).set(solve);
+                }
             }
         }
     }
@@ -76,6 +76,10 @@ public class MenuModel {
 
     public void setStoryModeChapter(int chapter) {
         storyModeChapter.set(chapter);
+    }
+
+    public int getStoryModeChapter() {
+        return storyModeChapter.get();
     }
 
     public IntegerProperty bombCreationAmountProperty() {
@@ -126,29 +130,37 @@ public class MenuModel {
         return bombCreationSeed.get();
     }
 
+    public ObjectProperty<StoryModeBombProgress> storyModeBombProgressProperty(String name) {
+        return storyModeProgress.get(name);
+    }
+
     public JsonObject getSaveData() {
         JsonObjectBuilder builder = Json.createObjectBuilder();
-        storyModeProgress.forEach((k, v) -> builder.add(k, v.toJson()));
+        storyModeProgress.forEach((k, v) -> builder.add(k, v.get().toJson()));
         return builder.build();
     }
 
-    private static class StoryModeBombProgress implements Comparable<StoryModeBombProgress> {
-        int timeRemaining;
-        int strikes;
-        boolean isNull = false;
+    public static class StoryModeBombProgress implements Comparable<StoryModeBombProgress> {
+        private int timeRemaining;
+        private int strikes;
+        public final boolean isNull;
 
         StoryModeBombProgress(JsonObject saveData) {
             if (saveData == null) {
                 isNull = true;
-            } else if (!saveData.containsKey("strikes") || !saveData.containsKey("timeRemaining")) {
-                throw new RuntimeException("Invalid save data"); //TODO ask player if they want to close game & fix the file or continue playing & overwrite the file
             } else {
-                strikes = saveData.getInt("strikes");
-                timeRemaining = saveData.getInt("timeRemaining");
+                isNull = false;
+                if (!saveData.containsKey("strikes") || !saveData.containsKey("timeRemaining")) {
+                    throw new RuntimeException("Invalid save data"); //TODO ask player if they want to close game & fix the file or continue playing & overwrite the file
+                } else {
+                    strikes = saveData.getInt("strikes");
+                    timeRemaining = saveData.getInt("timeRemaining");
+                }
             }
         }
 
         StoryModeBombProgress(int timeRemaining, int strikes) {
+            isNull = false;
             this.timeRemaining = timeRemaining;
             this.strikes = strikes;
         }
@@ -161,7 +173,7 @@ public class MenuModel {
              }
         }
 
-        JsonValue toJson() {
+        public JsonValue toJson() {
             if (isNull) {
                 return JsonObject.NULL;
             }
@@ -169,6 +181,10 @@ public class MenuModel {
                     .add("strikes", strikes)
                     .add("timeRemaining", timeRemaining)
                     .build();
+        }
+
+        public int getTimeRemaining() {
+            return timeRemaining;
         }
     }
 }

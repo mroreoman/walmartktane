@@ -16,6 +16,16 @@ import javafx.geometry.Insets;
 import javafx.util.converter.NumberStringConverter;
 
 public final class Util {
+    /**
+     * Formats a time value
+     * @param timeSecs time in seconds
+     * @return time in the format MM:SS
+     */
+    public static String formatTime(int timeSecs) {
+        int mins = timeSecs / 60;
+        int secs = timeSecs % 60;
+        return mins + ":" + (secs < 10 ? ("0" + secs) : secs);
+    }
 
     /**
      * Removes an entry from a unique list of ints

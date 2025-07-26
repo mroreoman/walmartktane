@@ -1,5 +1,8 @@
 package com.github.mroreoman.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -53,28 +56,43 @@ public class StoryModeView implements Builder<Region> {
     }
 
     private Node createChapterButtons() {
-        VBox chapterButtons = new VBox(10);
-        chapterButtons.setMinHeight(235);
-        chapterButtons.setMaxHeight(235);
-        chapterButtons.setAlignment(Pos.CENTER);
-        for (StoryModeBomb bomb : StoryModeBomb.ALL_CHAPTERS.get(model.storyModeChapterProperty().get())) {
-            chapterButtons.getChildren().add(createStoryModeButton(bomb));
+        List<List<Button>> chapters = new ArrayList<>();
+        for (List<StoryModeBomb> chapter : StoryModeBomb.ALL_CHAPTERS) {
+            List<Button> buttons = new ArrayList<>();
+            for (StoryModeBomb bomb : chapter) {
+                buttons.add(createBombButton(bomb));
+            }
+            chapters.add(buttons);
         }
 
-        model.storyModeChapterProperty().addListener((observable, oldValue, newValue) -> {
-            chapterButtons.getChildren().clear();
-            for (StoryModeBomb bomb : StoryModeBomb.ALL_CHAPTERS.get(newValue.intValue())) {
-                chapterButtons.getChildren().add(createStoryModeButton(bomb));
-            }
-        });
+//        List<List<Button>> chapters = StoryModeBomb.ALL_CHAPTERS.stream().map(chapter -> chapter.stream().map(this::createBombButton).toList()).toList();
 
-        return chapterButtons;
+        VBox box = new VBox(10);
+        box.setMinHeight(235);
+        box.setMaxHeight(235);
+        box.setAlignment(Pos.CENTER);
+        box.getChildren().addAll(chapters.get(model.getStoryModeChapter()));
+        model.storyModeChapterProperty().addListener((obs, oldV, newV) -> box.getChildren().setAll(chapters.get(newV.intValue())));
+        return box;
     }
 
-    private Button createStoryModeButton(StoryModeBomb bomb) {
-        Button button = new Button(bomb.name());
+    private Button createBombButton(StoryModeBomb bomb) {
+        Button button = new Button(createBombButtonText(bomb, model.storyModeBombProgressProperty(bomb.name()).get()));
         button.setOnAction(event -> model.setCurrentBomb(bomb.instantiate(bombExitAction)));
+
+        model.storyModeBombProgressProperty(bomb.name()).addListener((observable, oldValue, newValue) -> {
+            button.setText(createBombButtonText(bomb, newValue));
+        });
+
         return button;
+    }
+
+    private String createBombButtonText(StoryModeBomb bomb, MenuModel.StoryModeBombProgress progress) {
+        if (progress.isNull) {
+            return bomb.name();
+        }
+        int timeRemaining = progress.getTimeRemaining();
+        return bomb.name() + " (" + Util.formatTime(timeRemaining) + ")";
     }
 
     private Node createPageFlipper() {

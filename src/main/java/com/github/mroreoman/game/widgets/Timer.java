@@ -90,9 +90,7 @@ public class Timer extends BorderPane {
     }
 
     public String formattedTime() {
-        int mins = timeSecs.get() / 60;
-        int secs = timeSecs.get() % 60;
-        return mins + ":" + (secs < 10 ? ("0" + secs) : secs);
+        return Util.formatTime(timeSecs.get());
     }
 
     public boolean contains(int i) {
