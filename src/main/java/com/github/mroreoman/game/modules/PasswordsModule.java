@@ -21,7 +21,8 @@ public class PasswordsModule extends ModuleBase {
     private final static String[] passwords = {"about", "after", "again", "below", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "plant", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "water", "where", "which", "world", "would", "write"};
     private final static String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-    private Character[][] slots = {new Character[6], new Character[6], new Character[6], new Character[6], new Character[6]};
+    // private Character[][] slots = {new Character[6], new Character[6], new Character[6], new Character[6], new Character[6]};
+    private Character[][] slots;
 
     private AnchorPane box;
     private StackPane display;
@@ -87,7 +88,9 @@ public class PasswordsModule extends ModuleBase {
     }
 
     private void initPasswords(Random rand) {
+        slots = new Character[5][6];
         String word = passwords[rand.nextInt(passwords.length)];
+        solution = word;
 
         for (int i = 0; i < slots.length; i++) {
             String alphabet = PasswordsModule.alphabet;
@@ -107,8 +110,7 @@ public class PasswordsModule extends ModuleBase {
         }
     }
 
-    private boolean checkSolvable() { //FIXME unoptimal as hell
-        String solution = "";
+    private boolean checkSolvable() {
         for (String password : passwords) {
             int stage = 0;
             for (int i = 0; i < slots[1].length; i++) {
@@ -119,10 +121,13 @@ public class PasswordsModule extends ModuleBase {
                 if (stage == 5) {
                     break;
                 }
+                if (stage < i) {
+                    break;
+                }
             }
             if (stage == 5) {
-                if (solution.equals("")) {
-                    solution = password;
+                if (password.equals(solution)) {
+                    continue;
                 } else {
                     return false;
                 }
@@ -130,7 +135,6 @@ public class PasswordsModule extends ModuleBase {
                 continue;
             }
         }
-        this.solution = solution;
         return true;
     }
 
