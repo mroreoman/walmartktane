@@ -3,5 +3,5 @@ module walmartktane {
     requires jakarta.json;
     requires org.eclipse.parsson;
 
-    exports com.github.mroreoman;
+    exports com.github.asingh281;
 }

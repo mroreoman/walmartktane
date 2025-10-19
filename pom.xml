@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.mroreoman</groupId>
+    <groupId>com.github.asingh281</groupId>
     <artifactId>walmartktane</artifactId>
     <version>0.3.0</version>
     <properties>
@@ -41,7 +41,7 @@
                     <noManPages>true</noManPages>
                     <launcher>walmartktane</launcher>
                     <jlinkImageName>walmartktane</jlinkImageName>
-                    <mainClass>walmartktane/com.github.mroreoman.KTANE</mainClass>
+                    <mainClass>walmartktane/com.github.asingh281.KTANE</mainClass>
                 </configuration>
             </plugin>
         </plugins>
