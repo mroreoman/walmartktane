@@ -97,12 +97,10 @@ public class WhosOnFirstModule extends ModuleBase {
 
     private class WOF extends Button {
         String label;
-        int position;
 
-        private WOF(String label, int position, Random rand) {
+        private WOF(String label, Random rand) {
             super(label);
             this.label = label;
-            this.position = position;
             setOnAction(event -> press(rand));
             setPadding(Insets.EMPTY);
             setStyle("-fx-min-width: 65px; -fx-min-height: 30px; -fx-max-width: 65px; -fx-max-height: 30px; -fx-background-color: darkkhaki; -fx-font-family: 'Roboto Condensed'; -fx-font-size: 12; -fx-font-weight: bold;");
@@ -142,7 +140,7 @@ public class WhosOnFirstModule extends ModuleBase {
         displayLabel.setFont(Font.font("Roboto Condensed", FontWeight.SEMI_BOLD, 20));
         int[] butons = Util.randomUniqueIndexes(rand, Util.intAsArray(BUTTON_LABELS.length), 6);
         for (int i = 0; i < 6; i++) {
-            wofs[i] = new WOF(BUTTON_LABELS[butons[i]], i, rand);
+            wofs[i] = new WOF(BUTTON_LABELS[butons[i]], rand);
         }
     }
 

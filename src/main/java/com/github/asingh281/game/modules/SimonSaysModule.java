@@ -66,7 +66,7 @@ public class SimonSaysModule extends ModuleBase {
             flashTimeline.playFromStart();
         }
 
-        private EventHandler flasher() {
+        private EventHandler<ActionEvent> flasher() {
             return new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent e) {

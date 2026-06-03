@@ -159,22 +159,6 @@ public class WireSequencesModule extends ModuleBase {
         }
     }
 
-    private boolean checkSolved() {
-        boolean temp = true;
-        for (Panel panel : panels) {
-            for (WireSequence wire : panel.wires) {
-                if (wire.isCorrect) {
-                    temp &= wire.isCut;
-                }
-            }
-        }
-        if (temp) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     private void initGUI() {
         box = new AnchorPane();
         initSubPane(box);
